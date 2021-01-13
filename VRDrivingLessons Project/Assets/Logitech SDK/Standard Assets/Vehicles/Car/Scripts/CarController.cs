@@ -48,6 +48,11 @@ namespace UnityStandardAssets.Vehicles.Car
         private Rigidbody m_Rigidbody;
         private const float k_ReversingThreshold = 0.01f;
 
+        //bool to check if car is AI or for user - set to false as standard
+        private bool isUser = false;
+        private bool inGear;
+        private bool enguineOff = true;
+
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
         public float CurrentSteerAngle{ get { return m_SteerAngle; }}
@@ -72,22 +77,68 @@ namespace UnityStandardAssets.Vehicles.Car
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
         }
 
+        public void setUserControlled()
+        {
+            isUser = true;
+        }
 
         private void GearChanging()
         {
-            float f = Mathf.Abs(CurrentSpeed/MaxSpeed);
-            float upgearlimit = (1/(float) NoOfGears)*(m_GearNum + 1);
-            float downgearlimit = (1/(float) NoOfGears)*m_GearNum;
-
-            if (m_GearNum > 0 && f < downgearlimit)
+            if (isUser)
             {
-                m_GearNum--;
+                if (LogitechGSDK.LogiUpdate())
+                {
+                    LogitechGSDK.DIJOYSTATE2ENGINES rec;
+                    rec = LogitechGSDK.LogiGetStateUnity(0);
+                    if (rec.rgbButtons[12] == 128)
+                    {
+                        m_GearNum = 1;
+                        inGear = true;
+                    }
+                    else if (rec.rgbButtons[13] == 128)
+                    {
+                        m_GearNum = 2;
+                        inGear = true;
+                    }
+                    else if (rec.rgbButtons[14] == 128)
+                    {
+                        m_GearNum = 3;
+                        inGear = true;
+                    }
+                    else if (rec.rgbButtons[15] == 128)
+                    {
+                        m_GearNum = 4;
+                        inGear = true;
+                    }
+                    else if (rec.rgbButtons[16] == 128)
+                    {
+                        m_GearNum = 5;
+                        inGear = true;
+                    }
+                    else
+                    {
+                        inGear = false;
+                    }
+                    //need to add reverse and nuetral
+                }
             }
-
-            if (f > upgearlimit && (m_GearNum < (NoOfGears - 1)))
+            else
             {
-                m_GearNum++;
+                float f = Mathf.Abs(CurrentSpeed / MaxSpeed);
+                float upgearlimit = (1 / (float)NoOfGears) * (m_GearNum + 1);
+                float downgearlimit = (1 / (float)NoOfGears) * m_GearNum;
+
+                if (m_GearNum > 0 && f < downgearlimit)
+                {
+                    m_GearNum--;
+                }
+
+                if (f > upgearlimit && (m_GearNum < (NoOfGears - 1)))
+                {
+                    m_GearNum++;
+                }
             }
+            
         }
 
 
@@ -115,63 +166,134 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
 
-        private void CalculateRevs()
+        private void CalculateRevs()//likely to need to rewrite this whole function
         {
-            // calculate engine revs (for display / sound)
-            // (this is done in retrospect - revs are not used in force/power calculations)
-            CalculateGearFactor();
-            var gearNumFactor = m_GearNum/(float) NoOfGears;
-            var revsRangeMin = ULerp(0f, m_RevRangeBoundary, CurveFactor(gearNumFactor));
-            var revsRangeMax = ULerp(m_RevRangeBoundary, 1f, gearNumFactor);
-            Revs = ULerp(revsRangeMin, revsRangeMax, m_GearFactor);
+            if (isUser)
+            {
+                if (LogitechGSDK.LogiUpdate())
+                {
+                    LogitechGSDK.DIJOYSTATE2ENGINES rec;
+                    rec = LogitechGSDK.LogiGetStateUnity(0);
+                    if (enguineOff)
+                    {
+                        Revs = 0;
+                    }
+                    else if (inGear)
+                    {
+                        switch (m_GearNum)
+                        {
+                            case 1:
+                                Revs = CurrentSpeed / 80;
+                                break;
+                            case 2:
+                                Revs = CurrentSpeed / 120;
+                                break;
+                            case 3:
+                                Revs = CurrentSpeed / 175;
+                                break;
+                            case 4:
+                                Revs = CurrentSpeed / 235;
+                                break;
+                            case 5:
+                                Revs = CurrentSpeed / 370;
+                                break;
+                            default:
+                                Revs = 0.06f;
+                                break;
+                        }//switch
+                        /* stallimg needs to be added
+                                                if (Revs < 0.06)
+                                                {
+                                                    stall();
+                                                }
+                        */
+                    }
+                    else
+                    {
+                        Revs = (float)(rec.lY - 32767) / -65535;
+                        //if not pressing the gas then revs will be at resting rate
+                        if (Revs < 0.06)
+                        {
+                            Revs = 0.06f;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // calculate engine revs (for display / sound)
+                // (this is done in retrospect - revs are not used in force/power calculations)
+                CalculateGearFactor();
+                var gearNumFactor = m_GearNum / (float)NoOfGears;
+                var revsRangeMin = ULerp(0f, m_RevRangeBoundary, CurveFactor(gearNumFactor));
+                var revsRangeMax = ULerp(m_RevRangeBoundary, 1f, gearNumFactor);
+                Revs = ULerp(revsRangeMin, revsRangeMax, m_GearFactor);
+            }
+            
         }
 
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
-            for (int i = 0; i < 4; i++)
+            if (enguineOff)
             {
-                Quaternion quat;
-                Vector3 position;
-                m_WheelColliders[i].GetWorldPose(out position, out quat);
-                m_WheelMeshes[i].transform.position = position;
-                m_WheelMeshes[i].transform.rotation = quat;
+                if (LogitechGSDK.LogiUpdate())
+                {
+                    LogitechGSDK.DIJOYSTATE2ENGINES rec;
+                    rec = LogitechGSDK.LogiGetStateUnity(0);
+                    if (rec.rgbButtons[0] == 128)
+                    {
+                        enguineOff = false;
+                    }
+                }
             }
-
-            //clamp input values
-            //Debug.Log("Steering: " + steering);
-            //Debug.Log("Accel: " + accel);
-            steering = Mathf.Clamp(steering, -1, 1);
-            AccelInput = accel = Mathf.Clamp(accel, 0, 1);
-            BrakeInput = footbrake = -1*Mathf.Clamp(footbrake, -1, 0);
-            handbrake = Mathf.Clamp(handbrake, 0, 1);
-
-            //Set the steer on the front wheels.
-            //Assuming that wheels 0 and 1 are the front wheels.
-            m_SteerAngle = steering*m_MaximumSteerAngle;
-            m_WheelColliders[0].steerAngle = m_SteerAngle;
-            m_WheelColliders[1].steerAngle = m_SteerAngle;
-
-            SteerHelper();
-            ApplyDrive(accel, footbrake);
-            CapSpeed();
-
-            //Set the handbrake.
-            //Assuming that wheels 2 and 3 are the rear wheels.
-            if (handbrake > 0f)
+            else
             {
-                var hbTorque = handbrake*m_MaxHandbrakeTorque;
-                m_WheelColliders[2].brakeTorque = hbTorque;
-                m_WheelColliders[3].brakeTorque = hbTorque;
+                for (int i = 0; i < 4; i++)
+                {
+                    Quaternion quat;
+                    Vector3 position;
+                    m_WheelColliders[i].GetWorldPose(out position, out quat);
+                    m_WheelMeshes[i].transform.position = position;
+                    m_WheelMeshes[i].transform.rotation = quat;
+                }
+
+                //clamp input values
+                //Debug.Log("Steering: " + steering);
+                //Debug.Log("Accel: " + accel);
+                steering = Mathf.Clamp(steering, -1, 1);
+                AccelInput = accel = Mathf.Clamp(accel, 0, 1);
+                BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
+                handbrake = Mathf.Clamp(handbrake, 0, 1);
+
+                //Set the steer on the front wheels.
+                //Assuming that wheels 0 and 1 are the front wheels.
+                m_SteerAngle = steering * m_MaximumSteerAngle;
+                m_WheelColliders[0].steerAngle = m_SteerAngle;
+                m_WheelColliders[1].steerAngle = m_SteerAngle;
+
+                SteerHelper();
+                ApplyDrive(accel, footbrake);
+                CapSpeed();
+
+                //Set the handbrake.
+                //Assuming that wheels 2 and 3 are the rear wheels.
+                if (handbrake > 0f)
+                {
+                    var hbTorque = handbrake * m_MaxHandbrakeTorque;
+                    m_WheelColliders[2].brakeTorque = hbTorque;
+                    m_WheelColliders[3].brakeTorque = hbTorque;
+                }
+
+
+                CalculateRevs();
+                GearChanging();
+
+                AddDownForce();
+                CheckForWheelSpin();
+                TractionControl();
             }
-
-
-            CalculateRevs();
-            GearChanging();
-
-            AddDownForce();
-            CheckForWheelSpin();
-            TractionControl();
+            
         }
 
 
