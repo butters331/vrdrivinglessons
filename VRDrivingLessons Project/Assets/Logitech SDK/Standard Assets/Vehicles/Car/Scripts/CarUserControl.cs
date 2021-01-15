@@ -43,7 +43,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 //handbreak isnt encoded yet, may add handbreak button in future
                 float handbrake = CrossPlatformInputManager.GetAxis("Jump");
                 m_Car.Move(steering, accel, footbreak, handbrake);
-                Debug.Log("Revs: " + m_Car.Revs);
+                //Debug.Log("Revs: " + m_Car.Revs);
             }
             
  

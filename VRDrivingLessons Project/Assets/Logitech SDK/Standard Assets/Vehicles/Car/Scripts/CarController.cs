@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 #pragma warning disable 649
@@ -53,6 +54,11 @@ namespace UnityStandardAssets.Vehicles.Car
         private bool inGear;
         private bool enguineOff = true;
 
+        //clutch controller variables
+        private int lastClutchPos;
+        private bool gearChanged = false;
+        private bool clutchDown = false;
+
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
         public float CurrentSteerAngle{ get { return m_SteerAngle; }}
@@ -77,9 +83,16 @@ namespace UnityStandardAssets.Vehicles.Car
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
         }
 
+        //allows script to differentiate between AI cars and User cars
         public void setUserControlled()
         {
             isUser = true;
+        }
+
+        //accessor to be used in CarAudio to check if to play enguine noises
+        public bool isTurnedOff()
+        {
+            return enguineOff;
         }
 
         private void GearChanging()
@@ -88,41 +101,91 @@ namespace UnityStandardAssets.Vehicles.Car
             {
                 if (LogitechGSDK.LogiUpdate())
                 {
+                    //get wheel access as per manual
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                    lastClutchPos = rec.rglSlider[0];
+
+                    //check gearstick for which gear car is in
                     if (rec.rgbButtons[12] == 128)
                     {
-                        m_GearNum = 1;
+                        if (m_GearNum != 1)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 1;
+                        }
                         inGear = true;
                     }
                     else if (rec.rgbButtons[13] == 128)
                     {
-                        m_GearNum = 2;
+                        if (m_GearNum != 2)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 2;
+                        }
                         inGear = true;
                     }
                     else if (rec.rgbButtons[14] == 128)
                     {
-                        m_GearNum = 3;
+                        if (m_GearNum != 3)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 3;
+                        }
                         inGear = true;
                     }
                     else if (rec.rgbButtons[15] == 128)
                     {
-                        m_GearNum = 4;
+                        if (m_GearNum != 4)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 4;
+                        }
                         inGear = true;
                     }
                     else if (rec.rgbButtons[16] == 128)
                     {
-                        m_GearNum = 5;
+                        if (m_GearNum != 5)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 5;
+                        }
                         inGear = true;
                     }
-                    else
+                    else // else not in gear
                     {
+                        //checks if user has moved out fo gear without pressing the clutch
+                        if(inGear && !clutchDown)
+                        {
+                            stall();
+                        }
                         inGear = false;
                     }
                     //need to add reverse and nuetral
                 }
             }
-            else
+            else // allows automatic shifting of AI cars
             {
                 float f = Mathf.Abs(CurrentSpeed / MaxSpeed);
                 float upgearlimit = (1 / (float)NoOfGears) * (m_GearNum + 1);
@@ -165,52 +228,82 @@ namespace UnityStandardAssets.Vehicles.Car
             m_GearFactor = Mathf.Lerp(m_GearFactor, targetGearFactor, Time.deltaTime*5f);
         }
 
-
-        private void CalculateRevs()//likely to need to rewrite this whole function
+        private IEnumerator wait(float seconds)
         {
-            if (isUser)
+            yield return new WaitForSeconds(seconds);
+        }
+
+        //function to cause stalling
+        private void stall()
+        {
+            //play stall noise
+            enguineOff = true;
+            //relay msg to screen
+        }
+
+
+        private void CalculateRevs()
+        {
+            if (isUser) //function split in 2 for user car and AI
             {
                 if (LogitechGSDK.LogiUpdate())
                 {
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                    //no revs in not turned on
                     if (enguineOff)
                     {
                         Revs = 0;
                     }
-                    else if (inGear)
+
+                    else if (inGear && !clutchDown)
                     {
                         switch (m_GearNum)
                         {
                             case 1:
-                                Revs = CurrentSpeed / 80;
+                                smoothRevs(80); // converts speed to rpm as per website in notes and converts to between 0 and 1 for code
                                 break;
                             case 2:
-                                Revs = CurrentSpeed / 120;
+                                smoothRevs(120);
                                 break;
                             case 3:
-                                Revs = CurrentSpeed / 175;
+                                smoothRevs(175);
                                 break;
                             case 4:
-                                Revs = CurrentSpeed / 235;
+                                smoothRevs(235);
                                 break;
                             case 5:
-                                Revs = CurrentSpeed / 370;
+                                smoothRevs(370);
                                 break;
-                            default:
+                            default: // else not in gear, so rest
                                 Revs = 0.06f;
                                 break;
                         }//switch
-                        /* stallimg needs to be added
-                                                if (Revs < 0.06)
-                                                {
-                                                    stall();
-                                                }
-                        */
+                        
+                        if (Revs < 0.06 && !clutchDown)
+                        {
+                            //Debug.Log("This should exe");
+                            stall();
+                        }
+
+                        else if (clutchDown)
+                        {
+                            if (Revs < 0.06)
+                            {
+                                Revs = 0.06f;
+                            }
+                            else
+                            {
+                                smoothRevsNeutral((float)(rec.lY - 32767) / -65535);
+                            }
+                        }
+                        
                     }
-                    else
+                    else // else not in gear
                     {
-                        Revs = (float)(rec.lY - 32767) / -65535;
+                        //allows out of gear revving in conjunction to the accellorator being pressed
+                        smoothRevsNeutral((float)(rec.lY - 32767) / -65535);
                         //if not pressing the gas then revs will be at resting rate
                         if (Revs < 0.06)
                         {
@@ -219,7 +312,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     }
                 }
             }
-            else
+            else //Code for AI revs
             {
                 // calculate engine revs (for display / sound)
                 // (this is done in retrospect - revs are not used in force/power calculations)
@@ -232,10 +325,46 @@ namespace UnityStandardAssets.Vehicles.Car
             
         }
 
+        private void smoothRevsNeutral(float gas)
+        {
+            float revDifference = Revs - gas;
+            if (revDifference >= 0.01f)
+            {
+                Revs -= 0.01f;
+            }
+            else if (revDifference <= -0.01f)
+            {
+                Revs += 0.01f;
+            }
+            else
+            {
+                Revs = gas;
+            }
+        }
+
+        private void smoothRevs(int gearDivider)
+        {
+            float targetRevs = CurrentSpeed / gearDivider;
+            float revDifference = Revs - targetRevs;
+            if (revDifference >= 0.001f)
+            {
+                Revs -= 0.001f;
+            }
+            else if (revDifference <= -0.001f)
+            {
+                Revs += 0.001f;
+            }
+            else
+            {
+                Revs = targetRevs;
+            }
+
+        }
+
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
-            if (enguineOff)
+            if (enguineOff) // if turned off check for it to be turned back on
             {
                 if (LogitechGSDK.LogiUpdate())
                 {
@@ -258,12 +387,78 @@ namespace UnityStandardAssets.Vehicles.Car
                     m_WheelMeshes[i].transform.rotation = quat;
                 }
 
+                if (LogitechGSDK.LogiUpdate())
+                {
+                    LogitechGSDK.DIJOYSTATE2ENGINES rec;
+                    rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                    int currentClutchPosition = rec.rglSlider[0];
+
+                    if (currentClutchPosition < -2500)
+                    {
+                        clutchDown = true;
+                    }
+                    else
+                    {
+                        clutchDown = false;
+                    }
+
+                    if (gearChanged)
+                    {
+                        int liftLimit = 3500;
+                        
+                        if(currentClutchPosition < 2500 && currentClutchPosition > -2500)
+                        {
+                            inGear = true;
+                            clutchDown = false;
+                            if (Revs < 0.1)
+                            {
+                                stall();
+                                gearChanged = false;
+                            }
+                        }
+                        else if (currentClutchPosition >= 2500 && (currentClutchPosition - lastClutchPos > liftLimit))
+                        {
+                            stall();
+                            gearChanged = false;
+                        }
+                        else if (currentClutchPosition >= 2500)
+                        {
+                            gearChanged = false;
+                        }
+                        else
+                        {
+                            lastClutchPos = currentClutchPosition;
+                        }
+                    }
+                }
+
                 //clamp input values
                 //Debug.Log("Steering: " + steering);
                 //Debug.Log("Accel: " + accel);
                 steering = Mathf.Clamp(steering, -1, 1);
-                AccelInput = accel = Mathf.Clamp(accel, 0, 1);
-                BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
+
+                //if to make sure that car can't accel when not in gear
+                if (inGear && !clutchDown)
+                {
+                    AccelInput = accel = Mathf.Clamp(accel, 0, 1);
+                }
+                else
+                {
+                    AccelInput = accel = 0.0f;
+                }
+
+                //ensure break doesn't make you reverse
+                if (CurrentSpeed <= 0.5f)
+                {
+                    BrakeInput = footbrake = 0;
+                }
+                else
+                {
+                    BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
+                }
+                
+                
                 handbrake = Mathf.Clamp(handbrake, 0, 1);
 
                 //Set the steer on the front wheels.

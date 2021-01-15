@@ -47,6 +47,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private AudioSource m_HighAccel; // Source for the high acceleration sounds
         private AudioSource m_HighDecel; // Source for the high deceleration sounds
         private bool m_StartedSound; // flag for knowing if we have started sounds
+        private bool soundOff; //flag to turn sound on and off with enguine
         private CarController m_CarController; // Reference to car we are controlling
 
 
@@ -103,6 +104,16 @@ namespace UnityStandardAssets.Vehicles.Car
 
             if (m_StartedSound)
             {
+                if (m_CarController.isTurnedOff())
+                {
+                    StopSound();
+                    soundOff = true;
+                }
+                else if (soundOff) // if not off but sound is (ie turned back on)
+                {
+                    StartSound();
+                    soundOff = false;
+                }
                 // The pitch is interpolated between the min and max values, according to the car's revs.
                 float pitch = ULerp(lowPitchMin, lowPitchMax, m_CarController.Revs);
 
