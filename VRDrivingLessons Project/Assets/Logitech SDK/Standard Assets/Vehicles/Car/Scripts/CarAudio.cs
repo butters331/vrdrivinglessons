@@ -34,6 +34,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public AudioClip lowDecelClip;                                              // Audio clip for low deceleration
         public AudioClip highAccelClip;                                             // Audio clip for high acceleration
         public AudioClip highDecelClip;                                             // Audio clip for high deceleration
+        public Camera camera;
         public float pitchMultiplier = 1f;                                          // Used for altering the pitch of audio clips
         public float lowPitchMin = 1f;                                              // The lowest possible pitch for the low sounds
         public float lowPitchMax = 6f;                                              // The highest possible pitch for the low sounds
@@ -88,7 +89,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private void Update()
         {
             // get the distance to main camera
-            float camDist = (Camera.main.transform.position - transform.position).sqrMagnitude;
+            float camDist = (camera.transform.position - transform.position).sqrMagnitude;
 
             // stop sound if the object is beyond the maximum roll off distance
             if (m_StartedSound && camDist > maxRolloffDistance*maxRolloffDistance)

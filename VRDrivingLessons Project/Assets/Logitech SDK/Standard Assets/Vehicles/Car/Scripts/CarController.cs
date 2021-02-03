@@ -59,6 +59,12 @@ namespace UnityStandardAssets.Vehicles.Car
         private bool gearChanged = false;
         private bool clutchDown = false;
 
+        //reversing variables
+        bool inReverse = false;
+
+        public AudioSource stallNoise;
+        public AudioClip stallClip;
+
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
         public float CurrentSteerAngle{ get { return m_SteerAngle; }}
@@ -110,6 +116,12 @@ namespace UnityStandardAssets.Vehicles.Car
                     //check gearstick for which gear car is in
                     if (rec.rgbButtons[12] == 128)
                     {
+                        //stops you from moving forward when reversing too fast
+                        if (inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
                         if (m_GearNum != 1)
                         {
                             if (!clutchDown)
@@ -119,10 +131,17 @@ namespace UnityStandardAssets.Vehicles.Car
                             gearChanged = true;
                             m_GearNum = 1;
                         }
+                        inReverse = false;
                         inGear = true;
                     }
                     else if (rec.rgbButtons[13] == 128)
                     {
+                        //stops you from moving forward when reversing too fast
+                        if (inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
                         if (m_GearNum != 2)
                         {
                             if (!clutchDown)
@@ -132,10 +151,17 @@ namespace UnityStandardAssets.Vehicles.Car
                             gearChanged = true;
                             m_GearNum = 2;
                         }
+                        inReverse = false;
                         inGear = true;
                     }
                     else if (rec.rgbButtons[14] == 128)
                     {
+                        //stops you from moving forward when reversing too fast
+                        if (inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
                         if (m_GearNum != 3)
                         {
                             if (!clutchDown)
@@ -145,10 +171,17 @@ namespace UnityStandardAssets.Vehicles.Car
                             gearChanged = true;
                             m_GearNum = 3;
                         }
+                        inReverse = false;
                         inGear = true;
                     }
                     else if (rec.rgbButtons[15] == 128)
                     {
+                        //stops you from moving forward when reversing too fast
+                        if (inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
                         if (m_GearNum != 4)
                         {
                             if (!clutchDown)
@@ -158,10 +191,17 @@ namespace UnityStandardAssets.Vehicles.Car
                             gearChanged = true;
                             m_GearNum = 4;
                         }
+                        inReverse = false;
                         inGear = true;
                     }
                     else if (rec.rgbButtons[16] == 128)
                     {
+                        //stops you from moving forward when reversing too fast
+                        if (inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
                         if (m_GearNum != 5)
                         {
                             if (!clutchDown)
@@ -171,8 +211,31 @@ namespace UnityStandardAssets.Vehicles.Car
                             gearChanged = true;
                             m_GearNum = 5;
                         }
+                        inReverse = false;
                         inGear = true;
                     }
+                    //reverse gear
+                    else if (rec.rgbButtons[17] == 128)
+                    {
+                        //stops you from moving backwards when going forward too fast
+                        if (!inReverse && CurrentSpeed > 5)
+                        {
+                            stall();
+                        }
+
+                        if (m_GearNum != 6)
+                        {
+                            if (!clutchDown)
+                            {
+                                stall();
+                            }
+                            gearChanged = true;
+                            m_GearNum = 6;
+                        }
+                        inReverse = true;
+                        inGear = true;
+                    }
+
                     else // else not in gear
                     {
                         //checks if user has moved out fo gear without pressing the clutch
@@ -182,7 +245,7 @@ namespace UnityStandardAssets.Vehicles.Car
                         }
                         inGear = false;
                     }
-                    //need to add reverse and nuetral
+                    
                 }
             }
             else // allows automatic shifting of AI cars
@@ -237,6 +300,10 @@ namespace UnityStandardAssets.Vehicles.Car
         private void stall()
         {
             //play stall noise
+            stallNoise = gameObject.AddComponent<AudioSource>();
+            stallNoise.clip = stallClip;
+            stallNoise.volume = 1;
+            stallNoise.Play();
             enguineOff = true;
             //relay msg to screen
         }
@@ -275,6 +342,9 @@ namespace UnityStandardAssets.Vehicles.Car
                                 break;
                             case 5:
                                 smoothRevs(370);
+                                break;
+                            case 6:
+                                smoothRevs(80);
                                 break;
                             default: // else not in gear, so rest
                                 Revs = 0.06f;
@@ -374,6 +444,14 @@ namespace UnityStandardAssets.Vehicles.Car
                     {
                         enguineOff = false;
                     }
+                    if (rec.rgbButtons[3] == 128)
+                    {
+                        UnityEngine.XR.InputTracking.Recenter();
+                    }
+                    AccelInput = accel = 0.0f;
+                    BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
+                    ApplyDrive(accel, footbrake);
+                    SteerHelper();
                 }
             }
             else
@@ -391,6 +469,11 @@ namespace UnityStandardAssets.Vehicles.Car
                 {
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                    if (rec.rgbButtons[3] == 128)
+                    {
+                        UnityEngine.XR.InputTracking.Recenter();
+                    }
 
                     int currentClutchPosition = rec.rglSlider[0];
 
@@ -448,17 +531,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     AccelInput = accel = 0.0f;
                 }
 
-                //ensure break doesn't make you reverse
-                if (CurrentSpeed <= 0.5f)
-                {
-                    BrakeInput = footbrake = 0;
-                }
-                else
-                {
-                    BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
-                }
-                
-                
+                BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
                 handbrake = Mathf.Clamp(handbrake, 0, 1);
 
                 //Set the steer on the front wheels.
@@ -480,7 +553,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     m_WheelColliders[3].brakeTorque = hbTorque;
                 }
 
-
+                Debug.Log("Speed : " + CurrentSpeed);
                 CalculateRevs();
                 GearChanging();
 
@@ -545,10 +618,11 @@ namespace UnityStandardAssets.Vehicles.Car
                 {
                     m_WheelColliders[i].brakeTorque = m_BrakeTorque*footbrake;
                 }
-                else if (footbrake > 0)
+                else if (inReverse) // prev code: else if(footbrake > 0)
                 {
-                    m_WheelColliders[i].brakeTorque = 0f;
-                    m_WheelColliders[i].motorTorque = -m_ReverseTorque*footbrake;
+                    m_WheelColliders[i].brakeTorque = m_BrakeTorque * footbrake;
+                    //m_WheelColliders[i].motorTorque = -m_ReverseTorque*footbrake;
+                    m_WheelColliders[i].motorTorque = -m_ReverseTorque * accel;
                 }
             }
         }
