@@ -62,7 +62,6 @@ namespace UnityStandardAssets.Vehicles.Car
         //reversing variables
         bool inReverse = false;
 
-        public AudioSource stallNoise;
         public AudioClip stallClip;
 
         public bool Skidding { get; private set; }
@@ -93,6 +92,11 @@ namespace UnityStandardAssets.Vehicles.Car
         public void setUserControlled()
         {
             isUser = true;
+        }
+
+        public float getCurrentSpeed()
+        {
+            return CurrentSpeed;
         }
 
         //accessor to be used in CarAudio to check if to play enguine noises
@@ -300,10 +304,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private void stall()
         {
             //play stall noise
-            stallNoise = gameObject.AddComponent<AudioSource>();
-            stallNoise.clip = stallClip;
-            stallNoise.volume = 1;
-            stallNoise.Play();
+            AudioSource.PlayClipAtPoint(stallClip, transform.position);
             enguineOff = true;
             //relay msg to screen
         }
