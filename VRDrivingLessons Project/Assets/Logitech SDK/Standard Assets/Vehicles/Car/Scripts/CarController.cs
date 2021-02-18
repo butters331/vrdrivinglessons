@@ -554,6 +554,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 ApplyDrive(accel, footbrake);
                 CapSpeed();
 
+                Debug.Log("Handbrake: " + handbrake);
                 //Set the handbrake.
                 //Assuming that wheels 2 and 3 are the rear wheels.
                 if (handbrake > 0f)
@@ -650,7 +651,6 @@ namespace UnityStandardAssets.Vehicles.Car
                 }
                 
             }
-            Debug.Log("Break: " + m_WheelColliders[0].brakeTorque);
 
         }
 
