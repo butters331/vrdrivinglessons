@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
-
 
 namespace UnityStandardAssets.Vehicles.Car
 {
@@ -17,11 +15,15 @@ namespace UnityStandardAssets.Vehicles.Car
         private bool leftReleased = true;
 
         private int prevWheelPos;
+        private float time = 0.0f;
 
         public GameObject leftIndicator;
         public GameObject rightIndicator;
+        public AudioClip indicatorHigh;
+        public AudioClip indicatorLow;
+        public CarController m_Car;
 
-    // Start is called before the first frame update
+        // Start is called before the first frame update
         void Start()
         {
             rightOn = false;
@@ -35,7 +37,7 @@ namespace UnityStandardAssets.Vehicles.Car
         void Update()
         {
             //get the wheel input
-            if (LogitechGSDK.LogiUpdate())
+            if (!m_Car.isTurnedOff() && LogitechGSDK.LogiUpdate())
             {
                 LogitechGSDK.DIJOYSTATE2ENGINES rec;
                 rec = LogitechGSDK.LogiGetStateUnity(0);
@@ -47,7 +49,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     rightOn = !rightOn;
                     leftOn = false;
                     rightReleased = false;
-                   
+                    time = 0.0f;
                 }
                 //if left pressed
                 else if (rec.rgbButtons[5] == 128 && leftReleased)
@@ -55,15 +57,28 @@ namespace UnityStandardAssets.Vehicles.Car
                     rightOn = false;
                     leftOn = !leftOn;
                     leftReleased = false;
+                    time = 0.0f;
                 }
 
                 if (rightOn)
                 {
-                    //make right appear and left disappear
-                    if (!rightIndicator.active)
+                    //flash every half a second
+                    if (time >= 0.4)
                     {
-                        rightIndicator.active = true;
+                        //make right appear and left disappear
+                        if (!rightIndicator.active)
+                        {
+                            AudioSource.PlayClipAtPoint(indicatorHigh, transform.position);
+                            rightIndicator.active = true;
+                        }
+                        else // to make flash
+                        {
+                            AudioSource.PlayClipAtPoint(indicatorLow, transform.position);
+                            rightIndicator.active = false;
+                        }
+                        time = 0.0f;
                     }
+                    
                     if (leftIndicator.active)
                     {
                         leftIndicator.active = false;
@@ -77,14 +92,24 @@ namespace UnityStandardAssets.Vehicles.Car
                 }
                 else if (leftOn)
                 {
-                    //make left appear and right disappear
+                    if (time >= 0.4)
+                    {
+                        if (!leftIndicator.active)
+                        {
+                            AudioSource.PlayClipAtPoint(indicatorHigh, transform.position);
+                            leftIndicator.active = true;
+                        }
+                        else
+                        {
+                            AudioSource.PlayClipAtPoint(indicatorLow, transform.position);
+                            leftIndicator.active = false;
+                        }
+                        time = 0.0f;
+                    }
+                        //make left appear and right disappear
                     if (rightIndicator.active)
                     {
                         rightIndicator.active = false;
-                    }
-                    if (!leftIndicator.active)
-                    {
-                        leftIndicator.active = true;
                     }
 
                     //when turning, once the wheel starts to straighten, the indicator should turn off.
@@ -119,6 +144,8 @@ namespace UnityStandardAssets.Vehicles.Car
 
                 //update previous wheel position
                 prevWheelPos = currentWheelPos;
+
+                time += Time.deltaTime;
             }
         }
     }
