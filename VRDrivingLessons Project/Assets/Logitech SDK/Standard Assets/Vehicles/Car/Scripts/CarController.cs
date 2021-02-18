@@ -52,6 +52,7 @@ namespace UnityStandardAssets.Vehicles.Car
         //bool to check if car is AI or for user - set to false as standard
         private bool isUser = false;
         private bool inGear;
+        private bool stalled = false;
         private bool enguineOff = true;
 
         //clutch controller variables
@@ -303,9 +304,13 @@ namespace UnityStandardAssets.Vehicles.Car
         //function to cause stalling
         private void stall()
         {
-            //play stall noise
-            AudioSource.PlayClipAtPoint(stallClip, transform.position);
+            //play stall noise -- ensures only plays once
+            if (!stalled)
+            {
+                AudioSource.PlayClipAtPoint(stallClip, transform.position);
+            }
             enguineOff = true;
+            stalled = true;
             //relay msg to screen
         }
 
@@ -354,7 +359,6 @@ namespace UnityStandardAssets.Vehicles.Car
                         
                         if (Revs < 0.06 && !clutchDown)
                         {
-                            //Debug.Log("This should exe");
                             stall();
                         }
 
@@ -369,7 +373,7 @@ namespace UnityStandardAssets.Vehicles.Car
                                 smoothRevsNeutral((float)(rec.lY - 32767) / -65535);
                             }
                         }
-                        
+                                             
                     }
                     else // else not in gear
                     {
@@ -417,13 +421,13 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             float targetRevs = CurrentSpeed / gearDivider;
             float revDifference = Revs - targetRevs;
-            if (revDifference >= 0.001f)
+            if (revDifference >= 0.0005f)
             {
-                Revs -= 0.001f;
+                Revs -= 0.0005f;
             }
-            else if (revDifference <= -0.001f)
+            else if (revDifference <= -0.0005f)
             {
-                Revs += 0.001f;
+                Revs += 0.0005f;
             }
             else
             {
@@ -444,6 +448,10 @@ namespace UnityStandardAssets.Vehicles.Car
                     if (rec.rgbButtons[0] == 128)
                     {
                         enguineOff = false;
+                        if (stalled)
+                        {
+                            stalled = false;
+                        }
                     }
                     if (rec.rgbButtons[3] == 128)
                     {
@@ -454,9 +462,11 @@ namespace UnityStandardAssets.Vehicles.Car
                     ApplyDrive(accel, footbrake);
                     SteerHelper();
                 }
+                Revs = 0.0f;
             }
             else
             {
+
                 for (int i = 0; i < 4; i++)
                 {
                     Quaternion quat;
@@ -501,7 +511,8 @@ namespace UnityStandardAssets.Vehicles.Car
                                 gearChanged = false;
                             }
                         }
-                        else if (currentClutchPosition >= 2500 && (currentClutchPosition - lastClutchPos > liftLimit))
+                        //changed to stop stalling when changing gear quickly in higher gears
+                        else if ((m_GearNum == 1 || m_GearNum == 2) && currentClutchPosition >= 2500 && (currentClutchPosition - lastClutchPos > liftLimit))
                         {
                             stall();
                             gearChanged = false;
@@ -518,8 +529,6 @@ namespace UnityStandardAssets.Vehicles.Car
                 }
 
                 //clamp input values
-                //Debug.Log("Steering: " + steering);
-                //Debug.Log("Accel: " + accel);
                 steering = Mathf.Clamp(steering, -1, 1);
 
                 //if to make sure that car can't accel when not in gear
@@ -554,7 +563,6 @@ namespace UnityStandardAssets.Vehicles.Car
                     m_WheelColliders[3].brakeTorque = hbTorque;
                 }
 
-                Debug.Log("Speed : " + CurrentSpeed);
                 CalculateRevs();
                 GearChanging();
 
@@ -613,9 +621,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
             }
 
+            
+
             for (int i = 0; i < 4; i++)
             {
-                if (CurrentSpeed > 5 && Vector3.Angle(transform.forward, m_Rigidbody.velocity) < 50f)
+                //if (CurrentSpeed > 5 && Vector3.Angle(transform.forward, m_Rigidbody.velocity) < 50f)
+                if (Vector3.Angle(transform.forward, m_Rigidbody.velocity) < 50f)
                 {
                     m_WheelColliders[i].brakeTorque = m_BrakeTorque*footbrake;
                 }
@@ -625,7 +636,22 @@ namespace UnityStandardAssets.Vehicles.Car
                     //m_WheelColliders[i].motorTorque = -m_ReverseTorque*footbrake;
                     m_WheelColliders[i].motorTorque = -m_ReverseTorque * accel;
                 }
+                if (LogitechGSDK.LogiUpdate())
+                {
+                    //get wheel access as per manual
+                    LogitechGSDK.DIJOYSTATE2ENGINES rec;
+                    rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                    //if break isnt pressed, dont break
+                    if (rec.lRz == 32767)
+                    {
+                        m_WheelColliders[i].brakeTorque = 0;
+                    }
+                }
+                
             }
+            Debug.Log("Break: " + m_WheelColliders[0].brakeTorque);
+
         }
 
 
