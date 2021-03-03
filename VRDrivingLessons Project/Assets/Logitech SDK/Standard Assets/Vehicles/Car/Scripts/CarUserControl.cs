@@ -18,10 +18,10 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             // get the car controller
             m_Car = GetComponent<CarController>();
-            if (!(LogitechGSDK.LogiSteeringInitialize(false)))
-            {
-                Debug.Log("Failed wheel init");
-            }
+            //if (!(LogitechGSDK.LogiSteeringInitialize(false)))
+            //{
+            //    Debug.Log("Failed wheel init");
+            //}
             m_Car.setUserControlled();
             handBrakeLight.active = false;
         }
