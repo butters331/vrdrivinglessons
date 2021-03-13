@@ -11,8 +11,8 @@ public class MenuScript : MonoBehaviour
 
     public Slider sliderVertical;
     public Slider sliderHorizontal;
-
-    private Camera mainCamera;
+    public Image verticalSliderHead;
+    public Image horizontalSliderHead;
 
     private ColorBlock colours;
 
@@ -22,6 +22,8 @@ public class MenuScript : MonoBehaviour
     private bool sliderSelected = false;
     private bool onButtons = true;
     private bool aPressed = false;
+
+    public GameObject cameraVariables;
 
     private int sliderSelectedNum;
     private int selectedOption;
@@ -34,9 +36,12 @@ public class MenuScript : MonoBehaviour
         colours = GetComponent<Button>().colors;
         colours.normalColor = Color.white;
         colours.selectedColor = Color.green;
+        colours.highlightedColor = Color.red;
         option1.colors = colours;
         option2.colors = colours;
         option3.colors = colours;
+        sliderHorizontal.colors = colours;
+        sliderVertical.colors = colours;
 
         //initiate selection variable
         selectedOption = 1;
@@ -49,7 +54,6 @@ public class MenuScript : MonoBehaviour
         //make first option active
         option1.Select();
         onButtons = true;
-        mainCamera = Camera.main;
     }
 
     // Update is called once per frame
@@ -226,8 +230,11 @@ public class MenuScript : MonoBehaviour
                 }
                 else if(!onButtons && sliderSelected && sliderSelectedNum == 2)
                 {
-                    sliderHorizontal.value -= 0.1f;
-                    dPadPressed = true;
+                    if (!dPadPressed)
+                    {
+                        sliderHorizontal.value -= 0.1f;
+                        dPadPressed = true;
+                    }
                 }
             }
             else
@@ -264,19 +271,34 @@ public class MenuScript : MonoBehaviour
                 else//select or deselect the slider
                 {
                     sliderSelected = !sliderSelected;
+
+                    //change colours so user know if selected
+                    if (sliderSelected && sliderSelectedNum == 1)
+                    {
+                        verticalSliderHead.color = new Color32(5, 154, 5, 255);
+                        horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                    }
+                    else if (sliderSelected && sliderSelectedNum == 2)
+                    {
+                        horizontalSliderHead.color = new Color32(5, 154, 5, 255);
+                        verticalSliderHead.color = new Color32(0, 245, 0, 255);
+                        
+                    }
+                    else
+                    {
+                        verticalSliderHead.color = new Color32(0, 245, 0, 255);
+                        horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                    }
                 }
                 
             }
-            else //a is not pressed
+            else if (rec.rgbButtons[0] != 128) //a is not pressed
             {
                 aPressed = false;
             }
 
-            //update camera position according to the slider
-            Vector3 tempVector = mainCamera.transform.position;
-            tempVector.y += sliderVertical.value - 0.5f;
-            tempVector.z += sliderHorizontal.value - 0.5f;
-            mainCamera.transform.position = tempVector;
+            cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, sliderVertical.value - 0.5f, sliderHorizontal.value - 0.5f);
+            
         }
         else
         {

@@ -11,8 +11,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private bool handbrakeOn = false;
         private bool bReleased = true;
+        private bool loadedInto = true;
+
+        private GameObject cameraVariables;
 
         public GameObject handBrakeLight;
+        public GameObject cameraMovement;
 
         private void Awake()
         {
@@ -24,6 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car
             //}
             m_Car.setUserControlled();
             handBrakeLight.active = false;
+            
         }
 
         private void FixedUpdate()
@@ -33,6 +38,21 @@ namespace UnityStandardAssets.Vehicles.Car
                 //get data from wheel
                 LogitechGSDK.DIJOYSTATE2ENGINES rec;
                 rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                if (loadedInto)
+                {
+                    loadedInto = false;
+                    cameraVariables = GameObject.Find("CameraVariables");
+                    Vector3 tempVector = cameraMovement.transform.position;
+                    Debug.Log("original y: " + cameraMovement.transform.position.y);
+                    Vector3 cameraOffset = cameraVariables.GetComponent<CameraVariables>().coordinates;
+                    tempVector.y += cameraOffset.y * 0.5f;
+                    //so that sliding to the left makes you closer
+                    tempVector.z -= cameraOffset.z * 0.5f;
+                    cameraMovement.transform.position = tempVector;
+                    Debug.Log("new y: " + cameraMovement.transform.position.y);
+
+                }
                 // pass the input to the car!
                 //float h = CrossPlatformInputManager.GetAxis("Horizontal");
                 //float v = CrossPlatformInputManager.GetAxis("Vertical");
