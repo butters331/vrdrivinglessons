@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuScript : MonoBehaviour
 {
+    public GameObject topMenu;
 
     public Button option1;
     public Button option2;
@@ -14,19 +15,33 @@ public class MenuScript : MonoBehaviour
     public Image verticalSliderHead;
     public Image horizontalSliderHead;
 
+    public GameObject LessonsMenu;
+
+    public Button lesson1;
+    public Button lesson2;
+    public Button lesson3;
+
+    public Button back;
+
     private ColorBlock colours;
 
     private int numberOfOptions = 3;
+    private int numberOfLessons = 3;
     private bool wheelConnected = false;
     private bool dPadPressed = false;
     private bool sliderSelected = false;
     private bool onButtons = true;
     private bool aPressed = false;
 
+    private bool onTopMenu = true;
+    private bool changedState = false;
+    private bool onBack = false;
+
     public GameObject cameraVariables;
 
     private int sliderSelectedNum;
     private int selectedOption;
+    private int selectedOptionLessons;
 
     // Use this for initialization
 
@@ -45,6 +60,7 @@ public class MenuScript : MonoBehaviour
 
         //initiate selection variable
         selectedOption = 1;
+        selectedOptionLessons = 1;
         
         //check wheel connection
         if (LogitechGSDK.LogiIsConnected(0))
@@ -54,6 +70,7 @@ public class MenuScript : MonoBehaviour
         //make first option active
         option1.Select();
         onButtons = true;
+        onTopMenu = true;
     }
 
     // Update is called once per frame
@@ -80,221 +97,378 @@ public class MenuScript : MonoBehaviour
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
             rec = LogitechGSDK.LogiGetStateUnity(0);
             
-
-            if (rec.rgdwPOV[0] == 18000 /*if down selected*/)
-            { 
-                //if on sliders to the right
-                if (!onButtons)
+            if (onTopMenu)
+            {
+                //ensures the state is only changed once
+                if (changedState)
                 {
-                    //if hovering over slider and clicked select
-                    if (sliderSelected && sliderSelectedNum == 1)
-                    {
-                        //move slider down (but dont allow for hold)
-                        if (!dPadPressed)
-                        {
-                            sliderVertical.value -= 0.1f;
-                            dPadPressed = true;
-                        }
-                    }
-                    else//otherwise if not selected, go to horrizontal bottom slider
-                    {
-                        sliderHorizontal.Select();
-                        sliderSelectedNum = 2;
-                    }
-                }
-                else//if on the main menu buttons
-                {
-                    if (!dPadPressed)
-                    {
-                        //cycle options
-                        selectedOption += 1;
-                        dPadPressed = true;
-                    }
-
-                    if (selectedOption > numberOfOptions) //If at end of list go back to top
-                    {
-                        selectedOption = 1;
-                    }
-
-                    switch (selectedOption) //Set the visual indicator for which option you are on.
-                    {
-                        case 1:
-                            option1.Select();
-                            break;
-                        case 2:
-                            option2.Select();
-                            break;
-                        case 3:
-                            option3.Select();
-                            break;
-                        default:
-                            option1.Select();
-                            break;
-                    }
+                    LessonsMenu.SetActive(false);
+                    topMenu.SetActive(true);
+                    changedState = false;
                 }
                 
-            }
-
-            //made same as down, but with opposite outcomes 
-            else if (rec.rgdwPOV[0] == 0 /*|| up selected*/)
-            { 
-                if (!onButtons)
+                if (rec.rgdwPOV[0] == 18000 /*if down selected*/)
                 {
-                    if (sliderSelected && sliderSelectedNum == 1)
+                    //if on sliders to the right
+                    if (!onButtons)
+                    {
+                        //if hovering over slider and clicked select
+                        if (sliderSelected && sliderSelectedNum == 1)
+                        {
+                            //move slider down (but dont allow for hold)
+                            if (!dPadPressed)
+                            {
+                                sliderVertical.value -= 0.1f;
+                                dPadPressed = true;
+                            }
+                        }
+                        else//otherwise if not selected, go to horrizontal bottom slider
+                        {
+                            sliderHorizontal.Select();
+                            sliderSelectedNum = 2;
+                        }
+                    }
+                    else//if on the main menu buttons
                     {
                         if (!dPadPressed)
                         {
-                            sliderVertical.value += 0.1f;
+                            //cycle options
+                            selectedOption += 1;
                             dPadPressed = true;
+                        }
+
+                        if (selectedOption > numberOfOptions) //If at end of list go back to top
+                        {
+                            selectedOption = 1;
+                        }
+
+                        switch (selectedOption) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                option1.Select();
+                                break;
+                            case 2:
+                                option2.Select();
+                                break;
+                            case 3:
+                                option3.Select();
+                                break;
+                            default:
+                                option1.Select();
+                                break;
+                        }
+                    }
+
+                }
+
+                //made same as down, but with opposite outcomes 
+                else if (rec.rgdwPOV[0] == 0 /*|| up selected*/)
+                {
+                    if (!onButtons)
+                    {
+                        if (sliderSelected && sliderSelectedNum == 1)
+                        {
+                            if (!dPadPressed)
+                            {
+                                sliderVertical.value += 0.1f;
+                                dPadPressed = true;
+                            }
+                        }
+                        else
+                        {
+                            sliderVertical.Select();
+                            sliderSelectedNum = 1;
                         }
                     }
                     else
                     {
+                        if (!dPadPressed)
+                        {
+                            selectedOption -= 1;
+                            dPadPressed = true;
+                        }
+                        if (selectedOption < 1) //If at end of list go back to top
+                        {
+                            selectedOption = numberOfOptions;
+                        }
+
+                        switch (selectedOption) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                option1.Select();
+                                break;
+                            case 2:
+                                option2.Select();
+                                break;
+                            case 3:
+                                option3.Select();
+                                break;
+                            default:
+                                option1.Select();
+                                break;
+                        }
+                    }
+
+                }
+                else if (rec.rgdwPOV[0] == 9000) // right pressed
+                {
+                    //if on the main buttons move to slider
+                    if (onButtons)
+                    {
+                        onButtons = false;
                         sliderVertical.Select();
                         sliderSelectedNum = 1;
                     }
+                    else
+                    {
+                        //if selected the horizontal slider, change it
+                        if (sliderSelected && sliderSelectedNum == 2)
+                        {
+                            if (!dPadPressed)
+                            {
+                                sliderHorizontal.value += 0.1f;
+                                dPadPressed = true;
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    if (!dPadPressed)
-                    {
-                        selectedOption -= 1;
-                        dPadPressed = true;
-                    }
-                    if (selectedOption < 1) //If at end of list go back to top
-                    {
-                        selectedOption = numberOfOptions;
-                    }
 
-                    switch (selectedOption) //Set the visual indicator for which option you are on.
+                else if (rec.rgdwPOV[0] == 27000) // left pressed
+                {
+                    if (!onButtons && !sliderSelected)
                     {
-                        case 1:
-                            option1.Select();
-                            break;
-                        case 2:
-                            option2.Select();
-                            break;
-                        case 3:
-                            option3.Select();
-                            break;
-                        default:
-                            option1.Select();
-                            break;
+                        onButtons = true;
+                        switch (selectedOption) //Set the visual indicator for which option you are on -- move back to where you were
+                        {
+                            case 1:
+                                option1.Select();
+                                break;
+                            case 2:
+                                option2.Select();
+                                break;
+                            case 3:
+                                option3.Select();
+                                break;
+                            default:
+                                option1.Select();
+                                break;
+                        }
                     }
-                }
-                
-            }
-            else if(rec.rgdwPOV[0] == 9000) // right pressed
-            {
-                //if on the main buttons move to slider
-                if (onButtons)
-                {
-                    onButtons = false;
-                    sliderVertical.Select();
-                    sliderSelectedNum = 1;
-                }
-                else
-                {
-                    //if selected the horizontal slider, change it
-                    if (sliderSelected && sliderSelectedNum == 2)
+                    else if (!onButtons && sliderSelected && sliderSelectedNum == 2)
                     {
                         if (!dPadPressed)
                         {
-                            sliderHorizontal.value += 0.1f;
+                            sliderHorizontal.value -= 0.1f;
                             dPadPressed = true;
                         }
                     }
                 }
-            }
-
-            else if (rec.rgdwPOV[0] == 27000) // left pressed
-            {
-                if (!onButtons && !sliderSelected)
+                else
                 {
-                    onButtons = true;
-                    switch (selectedOption) //Set the visual indicator for which option you are on -- move back to where you were
-                    {
-                        case 1:
-                            option1.Select();
-                            break;
-                        case 2:
-                            option2.Select();
-                            break;
-                        case 3:
-                            option3.Select();
-                            break;
-                        default:
-                            option1.Select();
-                            break;
-                    }
+                    dPadPressed = false;
                 }
-                else if(!onButtons && sliderSelected && sliderSelectedNum == 2)
+                //if Y pressed recenter headset
+                if (rec.rgbButtons[3] == 128)
                 {
+                    UnityEngine.XR.InputTracking.Recenter();
+                }
+
+                //if a clicked
+                if (rec.rgbButtons[0] == 128 && !aPressed)
+                {
+                    aPressed = true;
+
+                    //if on the buttons, do said command
+                    if (onButtons)
+                    {
+                        switch (selectedOption) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                //move to lesson select
+                                onTopMenu = false;
+                                changedState = true;
+                                break;
+                            case 2:
+                                SceneManager.LoadScene(1);
+                                break;
+                            case 3:
+                                Application.Quit();
+                                break;
+                        }
+                    }
+                    else//select or deselect the slider
+                    {
+                        sliderSelected = !sliderSelected;
+
+                        //change colours so user know if selected
+                        if (sliderSelected && sliderSelectedNum == 1)
+                        {
+                            verticalSliderHead.color = new Color32(5, 154, 5, 255);
+                            horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                        }
+                        else if (sliderSelected && sliderSelectedNum == 2)
+                        {
+                            horizontalSliderHead.color = new Color32(5, 154, 5, 255);
+                            verticalSliderHead.color = new Color32(0, 245, 0, 255);
+
+                        }
+                        else
+                        {
+                            verticalSliderHead.color = new Color32(0, 245, 0, 255);
+                            horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                        }
+                    }
+
+                }
+                else if (rec.rgbButtons[0] != 128) //a is not pressed
+                {
+                    aPressed = false;
+                }
+            } // on top menu
+
+            else // on lessons menu
+            {
+                if (changedState)
+                {
+                    topMenu.SetActive(false);
+                    LessonsMenu.SetActive(true);
+                    changedState = false;
+                }
+
+                if (rec.rgdwPOV[0] == 18000 /*if down selected*/)
+                {
+                    //no longer on the back button
+                    onBack = false;
+
                     if (!dPadPressed)
                     {
-                        sliderHorizontal.value -= 0.1f;
+                        //cycle options
+                        selectedOptionLessons += 1;
                         dPadPressed = true;
                     }
-                }
-            }
-            else
-            {
-                dPadPressed = false;
-            }
-            //if Y pressed recenter headset
-            if (rec.rgbButtons[3] == 128)
-            {
-                UnityEngine.XR.InputTracking.Recenter();
-            }
 
-            //if a clicked
-            if (rec.rgbButtons[0] == 128 && !aPressed)
-            {
-                aPressed = true;
+                    if (selectedOptionLessons > numberOfLessons) //If at end of list go back to top
+                    {
+                        selectedOptionLessons = 1;
+                    }
 
-                //if on the buttons, do said command
-                if (onButtons)
-                {
-                    switch (selectedOption) //Set the visual indicator for which option you are on.
+                    switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
                     {
                         case 1:
-                            SceneManager.LoadScene(1);
+                            lesson1.Select();
                             break;
                         case 2:
-                            SceneManager.LoadScene(1);
+                            lesson2.Select();
                             break;
                         case 3:
-                            Application.Quit();
+                            lesson3.Select();
+                            break;
+                        default:
+                            lesson1.Select();
+                            break;
+                    }
+
+                }
+
+                //made same as down, but with opposite outcomes 
+                else if (rec.rgdwPOV[0] == 0 /*|| up selected*/)
+                {
+                    onBack = false;
+
+                    if (!dPadPressed)
+                    {
+                        selectedOptionLessons -= 1;
+                        dPadPressed = true;
+                    }
+                    if (selectedOptionLessons < 1) //If at end of list go back to top
+                    {
+                        selectedOptionLessons = numberOfLessons;
+                    }
+
+                    switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                    {
+                        case 1:
+                            lesson1.Select();
+                            break;
+                        case 2:
+                            lesson2.Select();
+                            break;
+                        case 3:
+                            lesson3.Select();
+                            break;
+                        default:
+                            lesson1.Select();
+                            break;
+                    }
+
+                }
+
+                else if (rec.rgdwPOV[0] == 27000) // left pressed
+                {
+                    back.Select();
+                    onBack = true;
+                }
+
+                else if (rec.rgdwPOV[0] == 9000)
+                {
+                    onBack = false;
+                    switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                    {
+                        case 1:
+                            lesson1.Select();
+                            break;
+                        case 2:
+                            lesson2.Select();
+                            break;
+                        case 3:
+                            lesson3.Select();
+                            break;
+                        default:
+                            lesson1.Select();
                             break;
                     }
                 }
-                else//select or deselect the slider
-                {
-                    sliderSelected = !sliderSelected;
 
-                    //change colours so user know if selected
-                    if (sliderSelected && sliderSelectedNum == 1)
+                else
+                {
+                    dPadPressed = false;
+                }
+                //if Y pressed recenter headset
+                if (rec.rgbButtons[3] == 128)
+                {
+                    UnityEngine.XR.InputTracking.Recenter();
+                }
+
+                //if a clicked
+                if (rec.rgbButtons[0] == 128 && !aPressed)
+                {
+                    aPressed = true;
+                    if (onBack)
                     {
-                        verticalSliderHead.color = new Color32(5, 154, 5, 255);
-                        horizontalSliderHead.color = new Color32(0, 245, 0, 255);
-                    }
-                    else if (sliderSelected && sliderSelectedNum == 2)
-                    {
-                        horizontalSliderHead.color = new Color32(5, 154, 5, 255);
-                        verticalSliderHead.color = new Color32(0, 245, 0, 255);
-                        
+                        onTopMenu = true;
+                        changedState = true;
                     }
                     else
                     {
-                        verticalSliderHead.color = new Color32(0, 245, 0, 255);
-                        horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                        switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                SceneManager.LoadScene(1);
+                                break;
+                            case 2:
+                                SceneManager.LoadScene(1);
+                                break;
+                            case 3:
+                                Application.Quit();
+                                break;
+                        }
                     }
+                    
                 }
-                
-            }
-            else if (rec.rgbButtons[0] != 128) //a is not pressed
-            {
-                aPressed = false;
+                else if (rec.rgbButtons[0] != 128) //a is not pressed
+                {
+                    aPressed = false;
+                }
             }
 
             cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, sliderVertical.value - 0.5f, sliderHorizontal.value - 0.5f);
