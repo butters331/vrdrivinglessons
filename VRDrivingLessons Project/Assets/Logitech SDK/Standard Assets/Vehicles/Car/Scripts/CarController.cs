@@ -68,7 +68,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
         public float CurrentSteerAngle{ get { return m_SteerAngle; }}
-        public float CurrentSpeed{ get { return m_Rigidbody.velocity.magnitude*2.23693629f; }}
+        public float CurrentSpeed{ private set { CurrentSpeed = value; } get { return m_Rigidbody.velocity.magnitude * 2.23693629f; }}
         public float MaxSpeed{get { return m_Topspeed; }}
         public float Revs { get; private set; }
         public float AccelInput { get; private set; }
@@ -84,9 +84,10 @@ namespace UnityStandardAssets.Vehicles.Car
             m_WheelColliders[0].attachedRigidbody.centerOfMass = m_CentreOfMassOffset;
 
             m_MaxHandbrakeTorque = float.MaxValue;
-
+            
             m_Rigidbody = GetComponent<Rigidbody>();
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
+            CurrentSpeed = 0;
         }
 
         //allows script to differentiate between AI cars and User cars
@@ -439,6 +440,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
+            Debug.Log("speed: " + getCurrentSpeed());
             if (enguineOff) // if turned off check for it to be turned back on
             {
                 if (LogitechGSDK.LogiUpdate())
@@ -554,7 +556,6 @@ namespace UnityStandardAssets.Vehicles.Car
                 ApplyDrive(accel, footbrake);
                 CapSpeed();
 
-                Debug.Log("Handbrake: " + handbrake);
                 //Set the handbrake.
                 //Assuming that wheels 2 and 3 are the rear wheels.
                 if (handbrake > 0f)

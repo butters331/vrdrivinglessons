@@ -20,11 +20,16 @@ public class Pause : MonoBehaviour
     private int selectedOption = 1;
     private GameObject cameraVariables;
 
+    private float originalHeightValue;
+    private float originalDistanceValue;
+
     private void Start()
     {
         cameraVariables = GameObject.Find("CameraVariables");
-        height.value = cameraVariables.GetComponent<CameraVariables>().coordinates.y + 0.5f;
-        distance.value = cameraVariables.GetComponent<CameraVariables>().coordinates.z + 0.5f;
+        originalHeightValue = cameraVariables.GetComponent<CameraVariables>().coordinates.y;
+        originalDistanceValue = cameraVariables.GetComponent<CameraVariables>().coordinates.z;
+        height.value = originalHeightValue + 0.5f;
+        distance.value = originalDistanceValue + 0.5f;
     }
 
     // Update is called once per frame
@@ -44,20 +49,17 @@ public class Pause : MonoBehaviour
                 {
                     if (sliderChanged)
                     {
-                        //find each how much each has changed
-                        float orignialY = cameraVariables.GetComponent<CameraVariables>().coordinates.y + 0.5f;
-                        float originalZ = cameraVariables.GetComponent<CameraVariables>().coordinates.z + 0.5f;
-                        float changeY = height.value - orignialY;
-                        float changeZ = distance.value - originalZ;
+                        float heightChange = height.value - 0.5f - originalHeightValue;
+                        float distanceChange = distance.value - 0.5f - originalDistanceValue;
+                        cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, height.value - 0.5f, distance.value - 0.5f);
 
-                        //store the new values in camera variables
-                        cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, orignialY + changeY, originalZ + changeZ);
-
-                        //update camera
                         Vector3 tempVector = cameraMovement.transform.position;
-                        tempVector.y += changeY * 0.5f;
-                        tempVector.z += changeZ * 0.5f;
+                        tempVector.y += heightChange;
+                        tempVector.z += distanceChange;
                         cameraMovement.transform.position = tempVector;
+                        originalHeightValue = height.value;
+                        originalDistanceValue = distance.value;
+                        sliderChanged = false;
                     }
                     pauseMenuUI.SetActive(false);
                     Time.timeScale = 1f;
@@ -109,13 +111,12 @@ public class Pause : MonoBehaviour
                     if (selectedOption == 2)
                     {
                         height.value += 0.1f;
-                        sliderChanged = true;
                     }
                     else if (selectedOption == 3)
                     {
                         distance.value += 0.1f;
-                        sliderChanged = true;
                     }
+                    sliderChanged = true;
                 }
                 dPadPressed = true;
             }
@@ -126,13 +127,12 @@ public class Pause : MonoBehaviour
                     if (selectedOption == 2)
                     {
                         height.value -= 0.1f;
-                        sliderChanged = true;
                     }
                     else if (selectedOption == 3)
                     {
                         distance.value -= 0.1f;
-                        sliderChanged = true;
                     }
+                    sliderChanged = true;
                 }
                 dPadPressed = true;
             }
@@ -176,20 +176,17 @@ public class Pause : MonoBehaviour
                     isPaused = false;
                     if (sliderChanged)
                     {
-                        //find each how much each has changed
-                        float orignialY = cameraVariables.GetComponent<CameraVariables>().coordinates.y + 0.5f;
-                        float originalZ = cameraVariables.GetComponent<CameraVariables>().coordinates.z + 0.5f;
-                        float changeY = height.value - orignialY;
-                        float changeZ = distance.value - originalZ;
+                        float heightChange = height.value - 0.5f - originalHeightValue;
+                        float distanceChange = distance.value - 0.5f - originalDistanceValue;
+                        cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, height.value - 0.5f, distance.value - 0.5f);
 
-                        //store the new values in camera variables
-                        cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, orignialY + changeY, originalZ + changeZ);
-
-                        //update camera
                         Vector3 tempVector = cameraMovement.transform.position;
-                        tempVector.y += changeY * 0.5f;
-                        tempVector.z += changeZ * 0.5f;
+                        tempVector.y += heightChange;
+                        tempVector.z += distanceChange;
                         cameraMovement.transform.position = tempVector;
+                        originalHeightValue = height.value;
+                        originalDistanceValue = distance.value;
+                        sliderChanged = false;
                     }
                 }
                 else if(selectedOption == 4)

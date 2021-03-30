@@ -9,7 +9,7 @@ namespace UnityStandardAssets.Vehicles.Car
     {
         private CarController m_Car; // the car controller we want to use
 
-        private bool handbrakeOn = false;
+        private bool handbrakeOn = true;
         private bool bReleased = true;
         private bool loadedInto = true;
 
@@ -27,7 +27,7 @@ namespace UnityStandardAssets.Vehicles.Car
             //    Debug.Log("Failed wheel init");
             //}
             m_Car.setUserControlled();
-            handBrakeLight.active = false;
+            handBrakeLight.SetActive(true);
             
         }
 
@@ -44,13 +44,15 @@ namespace UnityStandardAssets.Vehicles.Car
                     loadedInto = false;
                     cameraVariables = GameObject.Find("CameraVariables");
                     Vector3 tempVector = cameraMovement.transform.position;
-                    Debug.Log("original y: " + cameraMovement.transform.position.y);
                     Vector3 cameraOffset = cameraVariables.GetComponent<CameraVariables>().coordinates;
                     tempVector.y += cameraOffset.y * 0.5f;
                     //so that sliding to the left makes you closer
                     tempVector.z -= cameraOffset.z * 0.5f;
                     cameraMovement.transform.position = tempVector;
-                    Debug.Log("new y: " + cameraMovement.transform.position.y);
+                    if (cameraVariables.GetComponent<CameraVariables>().lessonSelection == 1)
+                    {
+
+                    }
 
                 }
                 // pass the input to the car!

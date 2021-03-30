@@ -453,6 +453,7 @@ public class MenuScript : MonoBehaviour
                         switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
                         {
                             case 1:
+                                cameraVariables.GetComponent<CameraVariables>().lessonSelection = 1;
                                 SceneManager.LoadScene(1);
                                 break;
                             case 2:

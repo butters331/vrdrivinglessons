@@ -5,10 +5,12 @@ using UnityEngine;
 public class CameraVariables : MonoBehaviour
 {
     public Vector3 coordinates;
+    public int lessonSelection;
 
     private void Start()
     {
         coordinates.Set(0, 0, 0);
+        lessonSelection = 0;
         DontDestroyOnLoad(this.gameObject);
     }
 }
