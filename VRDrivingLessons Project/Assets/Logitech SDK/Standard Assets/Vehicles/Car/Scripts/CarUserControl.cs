@@ -49,10 +49,6 @@ namespace UnityStandardAssets.Vehicles.Car
                     //so that sliding to the left makes you closer
                     tempVector.z -= cameraOffset.z * 0.5f;
                     cameraMovement.transform.position = tempVector;
-                    if (cameraVariables.GetComponent<CameraVariables>().lessonSelection == 1)
-                    {
-
-                    }
 
                 }
                 // pass the input to the car!

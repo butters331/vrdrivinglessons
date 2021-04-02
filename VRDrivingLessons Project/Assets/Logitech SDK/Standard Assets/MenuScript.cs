@@ -18,6 +18,7 @@ public class MenuScript : MonoBehaviour
     public GameObject LessonsMenu;
 
     public Button lesson1;
+    public Image lesson1Tick;
     public Button lesson2;
     public Button lesson3;
 
@@ -43,12 +44,15 @@ public class MenuScript : MonoBehaviour
     private int selectedOption;
     private int selectedOptionLessons;
 
+    //stored like a bool, but playerprefs doesnt support bools
+    private int completedAllAroundCheck;
+
     // Use this for initialization
 
     private void Start()
     {
         //set button clolours
-        colours = GetComponent<Button>().colors;
+        colours = lesson1.colors;
         colours.normalColor = Color.white;
         colours.selectedColor = Color.green;
         colours.highlightedColor = Color.red;
@@ -71,6 +75,17 @@ public class MenuScript : MonoBehaviour
         option1.Select();
         onButtons = true;
         onTopMenu = true;
+
+        completedAllAroundCheck = PlayerPrefs.GetInt("AlLAroundCheck", 0);
+        
+        if (completedAllAroundCheck == 1)
+        {
+            lesson1Tick.enabled = true;
+        }
+        else
+        {
+            lesson1Tick.enabled = false;
+        }
     }
 
     // Update is called once per frame

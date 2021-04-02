@@ -60,6 +60,9 @@ namespace UnityStandardAssets.Vehicles.Car
         private bool gearChanged = false;
         private bool clutchDown = false;
 
+        //bool to stop car rolling back on load
+        private bool startedForFirstTime = false;
+
         //reversing variables
         bool inReverse = false;
 
@@ -68,7 +71,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
         public float CurrentSteerAngle{ get { return m_SteerAngle; }}
-        public float CurrentSpeed{ private set { CurrentSpeed = value; } get { return m_Rigidbody.velocity.magnitude * 2.23693629f; }}
+        public float CurrentSpeed{ get { return m_Rigidbody.velocity.magnitude * 2.23693629f; }}
         public float MaxSpeed{get { return m_Topspeed; }}
         public float Revs { get; private set; }
         public float AccelInput { get; private set; }
@@ -87,7 +90,7 @@ namespace UnityStandardAssets.Vehicles.Car
             
             m_Rigidbody = GetComponent<Rigidbody>();
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
-            CurrentSpeed = 0;
+            m_Rigidbody.velocity = new Vector3(0, 0, 0);
         }
 
         //allows script to differentiate between AI cars and User cars
@@ -440,7 +443,6 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
-            Debug.Log("speed: " + getCurrentSpeed());
             if (enguineOff) // if turned off check for it to be turned back on
             {
                 if (LogitechGSDK.LogiUpdate())
@@ -449,6 +451,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     rec = LogitechGSDK.LogiGetStateUnity(0);
                     if (rec.rgbButtons[0] == 128)
                     {
+                        startedForFirstTime = true;
                         enguineOff = false;
                         if (stalled)
                         {
@@ -459,10 +462,17 @@ namespace UnityStandardAssets.Vehicles.Car
                     {
                         UnityEngine.XR.InputTracking.Recenter();
                     }
+
                     AccelInput = accel = 0.0f;
                     BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
                     ApplyDrive(accel, footbrake);
                     SteerHelper();
+
+                    if (!startedForFirstTime)
+                    {
+                        m_Rigidbody.velocity = new Vector3(0, 0, 0);
+                    }
+                    
                 }
                 Revs = 0.0f;
             }

@@ -91,6 +91,7 @@ public class AllAroundCheck : MonoBehaviour
                 LogitechGSDK.DIJOYSTATE2ENGINES rec;
                 rec = LogitechGSDK.LogiGetStateUnity(0);
 
+                PlayerPrefs.SetInt("AlLAroundCheck", 1);
                 //if x pressed
                 if (rec.rgbButtons[2] == 128)
                 {
