@@ -1,0 +1,71 @@
+In this lesson we're going to learn the starting and stopping of the car.
+Before we start, take a moment to familiarise yourself with the foot
+pedals. The furthest left is the clutch, this engages the gear when let
+out, and disengages it when pushed down. In the centre is the brake, 
+this helps the car stop, and to the right is the accelerator.
+
+The clutch is the most important pedal in the car, as poor clutch control
+will make your car stall. The clutch must always be fully down when moving
+from neutral into a gear, or vice versa. If youre pulling away from a 
+stationary position, you should slowly release the clutch around 50% of the
+way out. This is called the bite point. In a real car you can hear the 
+enguine noise change at this point, as well as see the bonnet lift slightly.
+However, this is signified in these lessons with a message on the screen. 
+At the bite point, the car revs should be increased to around 2 thousand 
+rpm, in order to stop the car stalling as the clutch is released. The 
+clutch should then be slowly released, and the car will start to move. When 
+you brake to come to a stop, the clutch must be pressed in again to 
+disengage the gears.
+
+In order to complete this lesson we will: start the car, push down the
+clutch, put the car into first, indicate left to pull out, perform an all
+around check bring the car to the bite, release the handbrake, add some
+revs with the accelerator, release the clutch slowly, drive for a few
+seconds, indicate right to pull over, push the clutch down, apply the brake,
+take the car out of gear, lift the clutch, apply the handbrake, release the
+footbrake, and finally turn the indicator off.
+
+Start by turning on the car by pressing 'A'.
+
+Next move is to push the clutch the whole way in and hold it there.
+
+Good, now put the car into first gear.
+
+Now indicate left to tell other drivers we're coming out.
+
+Fantastic, next job is to complete an all around check as in lesson 1, and
+then bring the car to the bite.
+
+Now we can release the handbrake by pressing 'B'.
+
+Next we need some revs, aim for around between 1 and a half thousand and 
+3 and a half thousand. Don't forget to keep checking your surroundings to
+make sure it's safe to pull away.
+
+Great, now slowly lift the clutch, maintaining those revs, and pull away.
+
+Now lets pull over. Indicate to the right.
+
+Good, then push the clutch the whole way in, releasing your other foot from
+the accelerator.
+
+With your right foot, push gently on the brake. Be carful not to push too
+hard, as the brake is very sensitive.
+
+Take the car out of gear and into neutral.
+
+Great job, now release the clutch.
+
+Apply the handbrake by pushing 'B'.
+
+Now you can lift your foot off of the footbrake.
+
+And finally cancel the indication, if it is still on.
+
+Congratulations you have completed the second lesson! Press 'X' to return
+to the main menu.
+
+That noise is the car stalling. Don't worry, it even happens to experienced
+drivers from time to time. Don't panic, push down the clutch and put the 
+car into neutral, then press 'A' to turn the car back on and try again from
+the start.

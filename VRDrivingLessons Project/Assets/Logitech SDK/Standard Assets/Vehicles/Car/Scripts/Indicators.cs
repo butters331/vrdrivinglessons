@@ -23,6 +23,21 @@ namespace UnityStandardAssets.Vehicles.Car
         public AudioClip indicatorLow;
         public CarController m_Car;
 
+        public bool indicatorsOn()
+        {
+            return (leftOn | rightOn);
+        }
+
+        public bool leftIndicatorOn()
+        {
+            return leftOn;
+        }
+
+        public bool rightIndicatorOn()
+        {
+            return rightOn;
+        }
+
         // Start is called before the first frame update
         void Start()
         {

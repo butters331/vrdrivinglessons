@@ -20,6 +20,7 @@ public class MenuScript : MonoBehaviour
     public Button lesson1;
     public Image lesson1Tick;
     public Button lesson2;
+    public Image lesson2Tick;
     public Button lesson3;
 
     public Button back;
@@ -46,6 +47,7 @@ public class MenuScript : MonoBehaviour
 
     //stored like a bool, but playerprefs doesnt support bools
     private int completedAllAroundCheck;
+    private int completedStartStop;
 
     // Use this for initialization
 
@@ -77,7 +79,8 @@ public class MenuScript : MonoBehaviour
         onTopMenu = true;
 
         completedAllAroundCheck = PlayerPrefs.GetInt("AlLAroundCheck", 0);
-        
+        completedStartStop = PlayerPrefs.GetInt("StartStop", 0);
+
         if (completedAllAroundCheck == 1)
         {
             lesson1Tick.enabled = true;
@@ -85,6 +88,15 @@ public class MenuScript : MonoBehaviour
         else
         {
             lesson1Tick.enabled = false;
+        }
+
+        if (completedStartStop == 1)
+        {
+            lesson2Tick.enabled = true;
+        }
+        else
+        {
+            lesson2Tick.enabled = false;
         }
     }
 
@@ -472,6 +484,7 @@ public class MenuScript : MonoBehaviour
                                 SceneManager.LoadScene(1);
                                 break;
                             case 2:
+                                cameraVariables.GetComponent<CameraVariables>().lessonSelection = 2;
                                 SceneManager.LoadScene(1);
                                 break;
                             case 3:

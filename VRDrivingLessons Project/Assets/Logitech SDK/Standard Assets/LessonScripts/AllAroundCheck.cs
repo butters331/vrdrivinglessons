@@ -15,6 +15,25 @@ public class AllAroundCheck : MonoBehaviour
 
     public Camera mainCam;
 
+    //audio for the lesson
+    public AudioSource intro;
+    public AudioSource rightShoulderAudio;
+    public AudioSource rightMirrorAudio;
+    public AudioSource interiorMirrorAudio;
+    public AudioSource leftMirrorAudio;
+    public AudioSource leftShoulderAudio;
+    public AudioSource outro;
+    public AudioSource returnToMainMenu;
+
+    //bools to make sure sound isnt played over and over again
+    private bool rightShoulderPlayed = false;
+    private bool rightMirrorPlayed = false;
+    private bool interiorMirrorPlayed = false;
+    private bool leftMirrorPlayed = false;
+    private bool leftShoulderPlayed = false;
+    private bool outroPlayed = false;
+    private bool xPlayed = false;
+
     private int panelToPointAt;
     private bool endOfLesson = false;
     private bool completedLoop;
@@ -22,7 +41,8 @@ public class AllAroundCheck : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rightShoulder.SetActive(true);
+        StartCoroutine(playVoiceOver(intro));
+        rightShoulder.SetActive(false);
         rightMirror.SetActive(false);
         interiorMirror.SetActive(false);
         leftMirror.SetActive(false);
@@ -34,10 +54,21 @@ public class AllAroundCheck : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         loaderCanvas.transform.position = mainCam.transform.position + mainCam.transform.forward * 0.3f;
         loaderCanvas.transform.rotation = mainCam.transform.rotation;
         if (panelToPointAt == 1)
         {
+            //dont show panel till the end of the commentry
+            if (!intro.isPlaying)
+            {
+                rightShoulder.SetActive(true);
+            }
+            if (!rightShoulderPlayed && !intro.isPlaying)
+            {
+                StartCoroutine(playVoiceOver(rightShoulderAudio));
+                rightShoulderPlayed = true;
+            }
             
             if (checkLooking(rightShoulder))
             {
@@ -48,6 +79,11 @@ public class AllAroundCheck : MonoBehaviour
         }
         else if (panelToPointAt == 2)
         {
+            if (!rightMirrorPlayed && !rightShoulderAudio.isPlaying)
+            {
+                StartCoroutine(playVoiceOver(rightMirrorAudio));
+                rightMirrorPlayed = true;
+            }
 
             if (checkLooking(rightMirror))
             {
@@ -58,6 +94,11 @@ public class AllAroundCheck : MonoBehaviour
         }
         else if (panelToPointAt == 3)
         {
+            if (!interiorMirrorPlayed && !rightMirrorAudio.isPlaying)
+            {
+                StartCoroutine(playVoiceOver(interiorMirrorAudio));
+                interiorMirrorPlayed = true;
+            }
 
             if (checkLooking(interiorMirror))
             {
@@ -68,6 +109,11 @@ public class AllAroundCheck : MonoBehaviour
         }
         else if (panelToPointAt == 4)
         {
+            if (!leftMirrorPlayed && !interiorMirrorAudio.isPlaying)
+            {
+                StartCoroutine(playVoiceOver(leftMirrorAudio));
+                leftMirrorPlayed = true;
+            }
 
             if (checkLooking(leftMirror))
             {
@@ -78,6 +124,11 @@ public class AllAroundCheck : MonoBehaviour
         }
         else if (panelToPointAt == 5)
         {
+            if (!leftShoulderPlayed && !leftMirrorAudio.isPlaying)
+            {
+                StartCoroutine(playVoiceOver(leftShoulderAudio));
+                leftShoulderPlayed = true;
+            }
 
             if (checkLooking(leftShoulder))
             {
@@ -92,6 +143,19 @@ public class AllAroundCheck : MonoBehaviour
                 rec = LogitechGSDK.LogiGetStateUnity(0);
 
                 PlayerPrefs.SetInt("AlLAroundCheck", 1);
+
+                if (!outroPlayed && !leftShoulderAudio.isPlaying)
+                {
+                    StartCoroutine(playVoiceOver(outro));
+                    outroPlayed = true;
+                }
+
+                if (!xPlayed && !outro.isPlaying)
+                {
+                    StartCoroutine(playVoiceOver(returnToMainMenu));
+                    xPlayed = true;
+                }
+
                 //if x pressed
                 if (rec.rgbButtons[2] == 128)
                 {
@@ -170,5 +234,11 @@ public class AllAroundCheck : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
        
+    }
+
+    IEnumerator playVoiceOver(AudioSource source)
+    {
+        source.Play();
+        yield return new WaitForSeconds(source.clip.length);
     }
 }

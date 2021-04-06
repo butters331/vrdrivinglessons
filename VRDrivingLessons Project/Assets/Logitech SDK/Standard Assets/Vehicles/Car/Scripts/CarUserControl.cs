@@ -17,6 +17,14 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public GameObject handBrakeLight;
         public GameObject cameraMovement;
+        public GameObject biteNotification;
+
+        public Camera mainCam;
+
+        public bool hasHandbrakeOn()
+        {
+            return handbrakeOn;
+        }
 
         private void Awake()
         {
@@ -38,6 +46,10 @@ namespace UnityStandardAssets.Vehicles.Car
                 //get data from wheel
                 LogitechGSDK.DIJOYSTATE2ENGINES rec;
                 rec = LogitechGSDK.LogiGetStateUnity(0);
+
+                Vector3 offset = new Vector3(0,-0.1f,0);
+                biteNotification.transform.position = mainCam.transform.position + offset + mainCam.transform.forward * 0.3f;
+                biteNotification.transform.rotation = mainCam.transform.rotation;
 
                 if (loadedInto)
                 {

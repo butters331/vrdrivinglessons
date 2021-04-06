@@ -4,6 +4,7 @@ public class LessonLoader : MonoBehaviour
 {
     private GameObject cameraVariables;
     public GameObject allAroundCheck;
+    public GameObject startStop;
     // Start is called before the first frame update
     void Start()
     {
@@ -12,9 +13,15 @@ public class LessonLoader : MonoBehaviour
         {
             case 1:
                 allAroundCheck.SetActive(true);
+                startStop.SetActive(false);
+                break;
+            case 2:
+                allAroundCheck.SetActive(false);
+                startStop.SetActive(true);
                 break;
             default:
                 allAroundCheck.SetActive(false);
+                startStop.SetActive(false);
                 break;
         }
     }

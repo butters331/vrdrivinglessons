@@ -52,7 +52,7 @@ namespace UnityStandardAssets.Vehicles.Car
         //bool to check if car is AI or for user - set to false as standard
         private bool isUser = false;
         private bool inGear;
-        private bool stalled = false;
+        public bool stalled = false;
         private bool enguineOff = true;
 
         //clutch controller variables
@@ -67,6 +67,7 @@ namespace UnityStandardAssets.Vehicles.Car
         bool inReverse = false;
 
         public AudioClip stallClip;
+        public GameObject biteNotification;
 
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
@@ -91,6 +92,8 @@ namespace UnityStandardAssets.Vehicles.Car
             m_Rigidbody = GetComponent<Rigidbody>();
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
             m_Rigidbody.velocity = new Vector3(0, 0, 0);
+
+            biteNotification.SetActive(false);
         }
 
         //allows script to differentiate between AI cars and User cars
@@ -102,6 +105,21 @@ namespace UnityStandardAssets.Vehicles.Car
         public float getCurrentSpeed()
         {
             return CurrentSpeed;
+        }
+
+        public int getGear()
+        {
+            return m_GearNum;
+        }
+
+        public bool isInGear()
+        {
+            return inGear;
+        }
+
+        public bool getClutchDown()
+        {
+            return clutchDown;
         }
 
         //accessor to be used in CarAudio to check if to play enguine noises
@@ -361,7 +379,7 @@ namespace UnityStandardAssets.Vehicles.Car
                                 break;
                         }//switch
                         
-                        if (Revs < 0.06 && !clutchDown)
+                        if (Revs < 0.06 && !clutchDown) //------------------------------------------------------------------------------------------------------
                         {
                             stall();
                         }
@@ -500,13 +518,23 @@ namespace UnityStandardAssets.Vehicles.Car
 
                     int currentClutchPosition = rec.rglSlider[0];
 
-                    if (currentClutchPosition < -2500)
+                    if (currentClutchPosition < 2500)
                     {
                         clutchDown = true;
                     }
                     else
                     {
                         clutchDown = false;
+                    }
+
+                    //hard to tell if car is biting, as cant feel it like in a real car, so a message is displayed in the screen.
+                    if (currentClutchPosition < 2500 && currentClutchPosition > -2500)
+                    {
+                        biteNotification.SetActive(true);
+                    }
+                    else
+                    {
+                        biteNotification.SetActive(false);
                     }
 
                     if (gearChanged)
@@ -516,8 +544,8 @@ namespace UnityStandardAssets.Vehicles.Car
                         if(currentClutchPosition < 2500 && currentClutchPosition > -2500)
                         {
                             inGear = true;
-                            clutchDown = false;
-                            if (Revs < 0.1)
+                            //clutchDown = false;
+                            if (Revs < 0.1 && CurrentSpeed > 5)
                             {
                                 stall();
                                 gearChanged = false;
