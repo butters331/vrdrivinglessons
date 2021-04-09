@@ -79,7 +79,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 if (bReleased && rec.rgbButtons[1] == 128)
                 {
                     handbrakeOn = !handbrakeOn;
-                    handBrakeLight.active = !handBrakeLight.active;
+                    handBrakeLight.SetActive(!handBrakeLight.activeInHierarchy);
                     bReleased = false;
                 }
                 else if (rec.rgbButtons[1] != 128)

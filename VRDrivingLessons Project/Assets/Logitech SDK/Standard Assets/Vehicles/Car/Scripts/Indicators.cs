@@ -43,8 +43,8 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             rightOn = false;
             leftOn = false;
-            rightIndicator.active = false;
-            leftIndicator.active = false;
+            rightIndicator.SetActive(false);
+            leftIndicator.SetActive(false);
             prevWheelPos = 0;
         }
 
@@ -81,22 +81,22 @@ namespace UnityStandardAssets.Vehicles.Car
                     if (time >= 0.4)
                     {
                         //make right appear and left disappear
-                        if (!rightIndicator.active)
+                        if (!rightIndicator.activeInHierarchy)
                         {
                             AudioSource.PlayClipAtPoint(indicatorHigh, transform.position);
-                            rightIndicator.active = true;
+                            rightIndicator.SetActive(true);
                         }
                         else // to make flash
                         {
                             AudioSource.PlayClipAtPoint(indicatorLow, transform.position);
-                            rightIndicator.active = false;
+                            rightIndicator.SetActive(false);
                         }
                         time = 0.0f;
                     }
                     
-                    if (leftIndicator.active)
+                    if (leftIndicator.activeInHierarchy)
                     {
-                        leftIndicator.active = false;
+                        leftIndicator.SetActive(false);
                     }
 
                     //when turning, once the wheel starts to straighten, the indicator should turn off.
@@ -109,22 +109,22 @@ namespace UnityStandardAssets.Vehicles.Car
                 {
                     if (time >= 0.4)
                     {
-                        if (!leftIndicator.active)
+                        if (!leftIndicator.activeInHierarchy)
                         {
                             AudioSource.PlayClipAtPoint(indicatorHigh, transform.position);
-                            leftIndicator.active = true;
+                            leftIndicator.SetActive(true);
                         }
                         else
                         {
                             AudioSource.PlayClipAtPoint(indicatorLow, transform.position);
-                            leftIndicator.active = false;
+                            leftIndicator.SetActive(false);
                         }
                         time = 0.0f;
                     }
                         //make left appear and right disappear
-                    if (rightIndicator.active)
+                    if (rightIndicator.activeInHierarchy)
                     {
-                        rightIndicator.active = false;
+                        rightIndicator.SetActive(false);
                     }
 
                     //when turning, once the wheel starts to straighten, the indicator should turn off.
@@ -137,13 +137,13 @@ namespace UnityStandardAssets.Vehicles.Car
                 else
                 {
                     //make both disappear
-                    if (rightIndicator.active)
+                    if (rightIndicator.activeInHierarchy)
                     {
-                        rightIndicator.active = false;
+                        rightIndicator.SetActive(false);
                     }
-                    if (leftIndicator.active)
+                    if (leftIndicator.activeInHierarchy)
                     {
-                        leftIndicator.active = false;
+                        leftIndicator.SetActive(false);
                     }
                 }
 

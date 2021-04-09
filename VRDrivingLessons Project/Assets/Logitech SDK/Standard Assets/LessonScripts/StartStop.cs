@@ -73,7 +73,6 @@ public class StartStop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Step: " + step);
         if (LogitechGSDK.LogiUpdate())
         {
             //get data from wheel

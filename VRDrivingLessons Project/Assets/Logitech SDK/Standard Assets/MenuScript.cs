@@ -488,7 +488,8 @@ public class MenuScript : MonoBehaviour
                                 SceneManager.LoadScene(1);
                                 break;
                             case 3:
-                                Application.Quit();
+                                cameraVariables.GetComponent<CameraVariables>().lessonSelection = 3;
+                                SceneManager.LoadScene(1);
                                 break;
                         }
                     }

@@ -68,6 +68,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public AudioClip stallClip;
         public GameObject biteNotification;
+        public GameObject pauseMenu;
 
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
@@ -265,7 +266,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
                     else // else not in gear
                     {
-                        //checks if user has moved out fo gear without pressing the clutch
+                        //checks if user has moved out of gear without pressing the clutch
                         if(inGear && !clutchDown)
                         {
                             stall();
@@ -467,7 +468,9 @@ namespace UnityStandardAssets.Vehicles.Car
                 {
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
-                    if (rec.rgbButtons[0] == 128)
+
+                    //added and to if statement to ensure that when pressing a on the pause menu, the car doesn't start
+                    if (rec.rgbButtons[0] == 128 && !pauseMenu.activeInHierarchy)
                     {
                         startedForFirstTime = true;
                         enguineOff = false;
@@ -547,8 +550,39 @@ namespace UnityStandardAssets.Vehicles.Car
                             //clutchDown = false;
                             if (Revs < 0.1 && CurrentSpeed > 5)
                             {
-                                stall();
-                                gearChanged = false;
+                                //switch statement to stop car stalling when moving at speed but not using accel pedal to change gear
+                                float targetRevs;
+                                switch (m_GearNum)
+                                {
+                                    case 1:
+                                        targetRevs = CurrentSpeed / 80;
+                                        break;
+                                    case 2:
+                                        targetRevs = CurrentSpeed / 120;
+                                        break;
+                                    case 3:
+                                        targetRevs = CurrentSpeed / 175;
+                                        break;
+                                    case 4:
+                                        targetRevs = CurrentSpeed / 235;
+                                        break;
+                                    case 5:
+                                        targetRevs = CurrentSpeed / 370;
+                                        break;
+                                    case 6:
+                                        targetRevs = CurrentSpeed / 80;
+                                        break;
+                                    default:
+                                        targetRevs = 0.06f;
+                                        break;
+
+                                }
+
+                                if (targetRevs < 0.06f)
+                                {
+                                    stall();
+                                    gearChanged = false;
+                                }
                             }
                         }
                         //changed to stop stalling when changing gear quickly in higher gears
