@@ -1,7 +1,6 @@
-In this lesson we're going to learn how to change gear whilst driving your
-car. When changing gears, it's important to be gentle with the gears. Try
-to avoid grabbing the stick forcing the car into gear, and instead use a 
-gentle pushes on the with your palm on the side of the stick. 
+In this lesson we're going to learn how to change the gear whilst driving your
+car. When changing gears, it's important to be gentle, so try
+to avoid forcing the gearstick into gear, and instead gently push the side of the gearstick with your palm. 
 
 In order to complete this lesson you will have to start the car, put it
 into gear, indicate left to pull out, perform an all around check, bring
@@ -23,7 +22,7 @@ Now push the clutch in and put the car into first.
 
 Excelent, now indicate left to pull out.
 
-Next, now bring the car to the biting point.
+Next, bring the clutch to the biting point.
 
 Good, now perform an all around check, and when the coast is clear, release
 the handbrake by pressing 'B'.

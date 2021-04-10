@@ -22,6 +22,7 @@ public class MenuScript : MonoBehaviour
     public Button lesson2;
     public Image lesson2Tick;
     public Button lesson3;
+    public Image lesson3Tick;
 
     public Button back;
 
@@ -48,6 +49,7 @@ public class MenuScript : MonoBehaviour
     //stored like a bool, but playerprefs doesnt support bools
     private int completedAllAroundCheck;
     private int completedStartStop;
+    private int completedGearChanging;
 
     // Use this for initialization
 
@@ -80,6 +82,7 @@ public class MenuScript : MonoBehaviour
 
         completedAllAroundCheck = PlayerPrefs.GetInt("AlLAroundCheck", 0);
         completedStartStop = PlayerPrefs.GetInt("StartStop", 0);
+        completedGearChanging = PlayerPrefs.GetInt("GearChanging", 0);
 
         if (completedAllAroundCheck == 1)
         {
@@ -97,6 +100,15 @@ public class MenuScript : MonoBehaviour
         else
         {
             lesson2Tick.enabled = false;
+        }
+
+        if (completedGearChanging == 1)
+        {
+            lesson3Tick.enabled = true;
+        }
+        else
+        {
+            lesson3Tick.enabled = false;
         }
     }
 

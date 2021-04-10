@@ -87,7 +87,7 @@ public class StartStop : MonoBehaviour
                         firstLoad = false;
                         if (!introPlayed)
                         {
-                            //StartCoroutine(playVoiceOver(intro));
+                            StartCoroutine(playVoiceOver(intro));
                             introPlayed = true;
                         }
 
@@ -95,7 +95,6 @@ public class StartStop : MonoBehaviour
                         {
                             StartCoroutine(playVoiceOver(overview));
                             overviewPlayed = true;
-                            firstLoad = false;
                         }
                     }
 
@@ -105,7 +104,7 @@ public class StartStop : MonoBehaviour
                         turnOnPlayed = true;
                     }
 
-                    if (!car.isTurnedOff() && !turnOn.isPlaying && !intro.isPlaying && !overview.isPlaying )
+                    if (!car.isTurnedOff() && !turnOn.isPlaying && !intro.isPlaying && !overview.isPlaying)
                     {
                         step++;
                     }
