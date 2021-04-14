@@ -1,0 +1,36 @@
+﻿/*
+  ** This code for waypoints is based off a tutorial by @GameDevGuide on their YouTube video [Building a Traffic System in Unity, 2019]
+ */
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityStandardAssets.Vehicles.Car;
+
+public class Waypoint : MonoBehaviour
+{
+    public Waypoint previousWaypoint;
+    public Waypoint nextWaypoint;
+    public int speedLimit;
+    private CarController car;
+
+    [Range(0f, 5f)]
+    public float width = 1f;
+
+    
+    public Vector3 getPosition()
+    {
+        return transform.position;
+    }
+
+    public void setCar(CarController newCar)
+    {
+        car = newCar;
+    }
+
+    public void removeCar()
+    {
+        car = null;
+    }
+
+}
