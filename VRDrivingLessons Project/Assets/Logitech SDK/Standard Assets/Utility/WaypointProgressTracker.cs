@@ -1,3 +1,6 @@
+/*
+  ** This code for waypoints is based off a tutorial by @GameDevGuide on their YouTube video [Building a Traffic System in Unity, 2019]
+ */
 using System;
 using UnityEngine;
 

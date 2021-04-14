@@ -53,7 +53,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private bool isUser = false;
         private bool inGear;
         public bool stalled = false;
-        private bool enguineOff = true;
+        private bool enguineOff = false;
 
         //clutch controller variables
         private int lastClutchPos;
@@ -101,6 +101,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public void setUserControlled()
         {
             isUser = true;
+            enguineOff = true;
         }
 
         public float getCurrentSpeed()
@@ -509,7 +510,7 @@ namespace UnityStandardAssets.Vehicles.Car
                     m_WheelMeshes[i].transform.rotation = quat;
                 }
 
-                if (LogitechGSDK.LogiUpdate())
+                if (isUser && LogitechGSDK.LogiUpdate())
                 {
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
@@ -606,7 +607,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 steering = Mathf.Clamp(steering, -1, 1);
 
                 //if to make sure that car can't accel when not in gear
-                if (inGear && !clutchDown)
+                if (!isUser || inGear && !clutchDown)
                 {
                     AccelInput = accel = Mathf.Clamp(accel, 0, 1);
                 }

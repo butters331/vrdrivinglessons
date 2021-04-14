@@ -85,7 +85,7 @@ public class WaypointManagerWindow : EditorWindow
             waypoint.transform.position = waypoint.previousWaypoint.transform.position;
             waypoint.transform.forward = waypoint.previousWaypoint.transform.forward;
         }
-
+        waypoint.setNoDirections(1);
         Selection.activeGameObject = waypoint.gameObject;
 
     }
@@ -107,7 +107,7 @@ public class WaypointManagerWindow : EditorWindow
             waypoint.transform.position = waypoint.previousWaypoint.transform.position;
             waypoint.transform.forward = waypoint.previousWaypoint.transform.forward;
         }
-
+        waypoint.setNoDirections(2);
         Selection.activeGameObject = waypoint.gameObject;
     }
 
@@ -128,7 +128,7 @@ public class WaypointManagerWindow : EditorWindow
             waypoint.transform.position = waypoint.previousWaypoint.transform.position;
             waypoint.transform.forward = waypoint.previousWaypoint.transform.forward;
         }
-
+        waypoint.setNoDirections(3);
         Selection.activeGameObject = waypoint.gameObject;
     }
     private void CreateWaypointBefore()

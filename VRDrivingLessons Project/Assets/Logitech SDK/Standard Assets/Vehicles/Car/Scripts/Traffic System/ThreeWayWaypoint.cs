@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityStandardAssets.Vehicles.Car;
 
 public class ThreeWayWaypoint : Waypoint
 {
@@ -26,4 +24,11 @@ public class ThreeWayWaypoint : Waypoint
                 break;
         }
     }
+
+    public new void setCar(CarController newCar)
+    {
+        chooseDirection();
+        base.setCar(newCar);
+    }
+
 }

@@ -46,6 +46,8 @@ namespace UnityStandardAssets.Vehicles.Car
         private float m_AvoidPathOffset;          // direction (-1 or 1) in which to offset path to avoid other car, whilst avoiding
         private Rigidbody m_Rigidbody;
 
+        public Waypoint waypoint;
+
 
         private void Awake()
         {
@@ -58,9 +60,37 @@ namespace UnityStandardAssets.Vehicles.Car
             m_Rigidbody = GetComponent<Rigidbody>();
         }
 
+        private void Start()
+        {
+            m_Target = waypoint.transform;
+        }
+
 
         private void FixedUpdate()
         {
+            Vector3 distanceToWaypoint = m_Target.position - transform.position;
+            distanceToWaypoint.y = 0;
+
+            if ((distanceToWaypoint).magnitude <= 3)
+            {
+                waypoint.removeCar();
+                waypoint = waypoint.nextWaypoint;
+                m_Target = waypoint.transform;
+                if (waypoint.getNoDirections() == 1)
+                {
+                    waypoint.setCar(m_CarController);
+                }
+                else if (waypoint.getNoDirections() == 2)
+                {
+                    ((ThreeWayWaypoint)waypoint).setCar(m_CarController);
+                }
+                else if (waypoint.getNoDirections() == 3)
+                {
+                    ((FourWayWaypoint)waypoint).setCar(m_CarController);
+                }
+
+
+            }
             if (m_Target == null || !m_Driving)
             {
                 // Car should not be moving,

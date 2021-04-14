@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityStandardAssets.Vehicles.Car;
 public class FourWayWaypoint : Waypoint
 {
     public Waypoint leftWaypoint;
@@ -29,5 +26,11 @@ public class FourWayWaypoint : Waypoint
                 nextWaypoint = aheadWayPoint;
                 break;
         }
+    }
+
+    public void setCar(CarController newCar)
+    {
+        chooseDirection();
+        base.setCar(newCar);
     }
 }
