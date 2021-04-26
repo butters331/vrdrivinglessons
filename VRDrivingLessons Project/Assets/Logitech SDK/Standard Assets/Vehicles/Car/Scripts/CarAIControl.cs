@@ -46,6 +46,9 @@ namespace UnityStandardAssets.Vehicles.Car
         private float m_AvoidPathOffset;          // direction (-1 or 1) in which to offset path to avoid other car, whilst avoiding
         private Rigidbody m_Rigidbody;
 
+        private bool stopped = false;
+        public int turning = 0;
+
         public Waypoint waypoint;
 
 
@@ -82,16 +85,16 @@ namespace UnityStandardAssets.Vehicles.Car
                 }
                 else if (waypoint.getNoDirections() == 2)
                 {
-                    ((ThreeWayWaypoint)waypoint).setCar(m_CarController);
+                    ((ThreeWayWaypoint)waypoint).setCarThreeWay(m_CarController);
                 }
                 else if (waypoint.getNoDirections() == 3)
                 {
-                    ((FourWayWaypoint)waypoint).setCar(m_CarController);
+                    ((FourWayWaypoint)waypoint).setCarFourWay(m_CarController);
                 }
 
 
             }
-            if (m_Target == null || !m_Driving)
+            if (stopped || m_Target == null || !m_Driving)
             {
                 // Car should not be moving,
                 // use handbrake to stop
@@ -199,7 +202,13 @@ namespace UnityStandardAssets.Vehicles.Car
                 float steer = Mathf.Clamp(targetAngle*m_SteerSensitivity, -1, 1)*Mathf.Sign(m_CarController.CurrentSpeed);
 
                 // feed input to the car controller.
-                m_CarController.Move(steer, accel, accel, 0f);
+                if (!stopped & m_CarController.CurrentSpeed < 1)
+                {
+                    m_Rigidbody.velocity = m_CarController.transform.forward.normalized;
+                    m_CarController.Move(steer, 1, 0, 0f);
+                }
+                else
+                    m_CarController.Move(steer, accel, accel, 0f);
 
                 // if appropriate, stop driving when we're close enough to the target.
                 if (m_StopWhenTargetReached && localTarget.magnitude < m_ReachTargetThreshold)
@@ -242,6 +251,20 @@ namespace UnityStandardAssets.Vehicles.Car
             }
         }
 
+        public void aiStop()
+        {
+            stopped = true;
+        }
+
+        public void aiStart()
+        {
+            stopped = false;
+        }
+
+        public bool getStopped()
+        {
+            return stopped;
+        }
 
         public void SetTarget(Transform target)
         {

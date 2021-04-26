@@ -1,4 +1,5 @@
 ﻿using UnityStandardAssets.Vehicles.Car;
+using UnityEngine;
 public class FourWayWaypoint : Waypoint
 {
     public Waypoint leftWaypoint;
@@ -9,28 +10,60 @@ public class FourWayWaypoint : Waypoint
     {
         System.Random random = new System.Random();
         int chosenDirection = random.Next(0, 3);
+        CarAIControl carAi = getCarAI();
 
-        switch (chosenDirection)
+        if (nextIsJunc)
         {
-            case 0:
-                nextWaypoint = leftWaypoint;
-                break;
-            case 1:
-                nextWaypoint = rightWaypoint;
-                break;
-            case 2:
-                nextWaypoint = aheadWayPoint;
-                break;
+            switch (chosenDirection)
+            {
+                case 0:
+                    nextWaypoint.nextWaypoint = leftWaypoint;
+                    carAi.turning = 1;
+                    break;
+                case 1:
+                    nextWaypoint.nextWaypoint = rightWaypoint;
+                    carAi.turning = 2;
+                    break;
+                case 2:
+                    nextWaypoint.nextWaypoint = aheadWayPoint;
+                    carAi.turning = 0;
+                    break;
 
-            default:
-                nextWaypoint = aheadWayPoint;
-                break;
+                default:
+                    nextWaypoint.nextWaypoint = aheadWayPoint;
+                    carAi.turning = 0;
+                    break;
+            }
         }
+        else
+        {
+            switch (chosenDirection)
+            {
+                case 0:
+                    nextWaypoint = leftWaypoint;
+                    carAi.turning = 1;
+                    break;
+                case 1:
+                    nextWaypoint = rightWaypoint;
+                    carAi.turning = 2;
+                    break;
+                case 2:
+                    nextWaypoint = aheadWayPoint;
+                    carAi.turning = 0;
+                    break;
+
+                default:
+                    nextWaypoint = aheadWayPoint;
+                    carAi.turning = 0;
+                    break;
+            }
+        }
+        
     }
 
-    public void setCar(CarController newCar)
+    public void setCarFourWay(CarController newCar)
     {
+        setCar(newCar);
         chooseDirection();
-        base.setCar(newCar);
     }
 }
