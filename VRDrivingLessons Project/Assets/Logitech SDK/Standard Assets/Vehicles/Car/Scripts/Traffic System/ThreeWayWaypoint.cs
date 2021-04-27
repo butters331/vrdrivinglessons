@@ -1,4 +1,5 @@
 ﻿using UnityStandardAssets.Vehicles.Car;
+using UnityEngine;
 
 public class ThreeWayWaypoint : Waypoint
 {
