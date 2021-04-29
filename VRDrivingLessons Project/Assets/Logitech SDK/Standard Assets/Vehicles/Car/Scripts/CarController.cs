@@ -469,9 +469,9 @@ namespace UnityStandardAssets.Vehicles.Car
                 {
                     LogitechGSDK.DIJOYSTATE2ENGINES rec;
                     rec = LogitechGSDK.LogiGetStateUnity(0);
-
+                    bool aPressed = false;
                     //added and to if statement to ensure that when pressing a on the pause menu, the car doesn't start
-                    if (rec.rgbButtons[0] == 128 && !pauseMenu.activeInHierarchy)
+                    if (rec.rgbButtons[0] == 128 && !pauseMenu.activeInHierarchy && !aPressed)
                     {
                         startedForFirstTime = true;
                         enguineOff = false;
@@ -479,6 +479,10 @@ namespace UnityStandardAssets.Vehicles.Car
                         {
                             stalled = false;
                         }
+                    }
+                    else if(rec.rgbButtons[0] != 128)
+                    {
+                        aPressed = false;
                     }
                     if (rec.rgbButtons[3] == 128)
                     {

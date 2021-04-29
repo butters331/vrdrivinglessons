@@ -35,6 +35,7 @@ public class Pause : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (LogitechGSDK.LogiUpdate())
         {
             //get data from wheel
@@ -50,6 +51,7 @@ public class Pause : MonoBehaviour
                     if (sliderChanged)
                     {
                         float heightChange = height.value - 0.5f - originalHeightValue;
+                        Debug.Log("change in hight: " + heightChange);
                         float distanceChange = distance.value - 0.5f - originalDistanceValue;
                         cameraVariables.GetComponent<CameraVariables>().coordinates.Set(0, height.value - 0.5f, distance.value - 0.5f);
 
@@ -57,8 +59,10 @@ public class Pause : MonoBehaviour
                         tempVector.y += heightChange;
                         tempVector.z += distanceChange;
                         cameraMovement.transform.position = tempVector;
-                        originalHeightValue = height.value;
-                        originalDistanceValue = distance.value;
+                        originalHeightValue = cameraVariables.GetComponent<CameraVariables>().coordinates.y;
+                        originalDistanceValue = cameraVariables.GetComponent<CameraVariables>().coordinates.z;
+                        height.value = originalHeightValue + 0.5f;
+                        distance.value = originalDistanceValue + 0.5f;
                         sliderChanged = false;
                     }
                     pauseMenuUI.SetActive(false);
@@ -184,8 +188,10 @@ public class Pause : MonoBehaviour
                         tempVector.y += heightChange;
                         tempVector.z += distanceChange;
                         cameraMovement.transform.position = tempVector;
-                        originalHeightValue = height.value;
-                        originalDistanceValue = distance.value;
+                        originalHeightValue = cameraVariables.GetComponent<CameraVariables>().coordinates.y;
+                        originalDistanceValue = cameraVariables.GetComponent<CameraVariables>().coordinates.z;
+                        height.value = originalHeightValue + 0.5f;
+                        distance.value = originalDistanceValue + 0.5f;
                         sliderChanged = false;
                     }
                 }

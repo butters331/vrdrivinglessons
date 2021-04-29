@@ -34,8 +34,17 @@ public class Waypoint : MonoBehaviour
     private bool stoppedForCar = false;
     public CarController car;
 
+    private GameObject userCar;
+    private CarController userController;
+
     [Range(0f, 5f)]
     public float width = 1f;
+
+    private void Start()
+    {
+        userCar = GameObject.Find("Car");
+        userController = userCar.GetComponent<CarController>();
+    }
 
     private void Update()
     {
@@ -142,18 +151,18 @@ public class Waypoint : MonoBehaviour
                         }
                         else
                         {
-                            if (juncRight.hasCar() && juncLeft.hasCar() && juncAhead.hasCar())
+                            if (juncRight.hasCarThere() && juncLeft.hasCarThere() && juncAhead.hasCarThere())
                             {
                                 if (priority < juncAhead.priority && priority < juncLeft.priority && priority < juncRight.priority)
                                 {
                                     aiController.aiStart();
                                 }
                             }
-                            else if ((!juncRight.hasCar() && !juncLeft.hasCar() && !juncAhead.hasCar()) || (!juncRight.hasCar() && juncLeft.hasCar() && juncAhead.hasCar()))
+                            else if ((!juncRight.hasCarThere() && !juncLeft.hasCarThere() && !juncAhead.hasCarThere()) || (!juncRight.hasCarThere() && juncLeft.hasCarThere() && juncAhead.hasCarThere()))
                             {
                                 aiController.aiStart();
                             }
-                            else if (!juncRight.hasCar() && !juncLeft.hasCar() && juncAhead.hasCar())
+                            else if (!juncRight.hasCarThere() && !juncLeft.hasCarThere() && juncAhead.hasCarThere())
                             {
                                 if (aiController.turning != 1)
                                 {
@@ -179,7 +188,7 @@ public class Waypoint : MonoBehaviour
                                 }
 
                             }
-                            else if (juncRight.hasCar())
+                            else if (juncRight.hasCarThere())
                             {
                                 StartCoroutine(WaitAtJunc());
                             }
@@ -310,16 +319,19 @@ public class Waypoint : MonoBehaviour
                 aiController.turning = 0;
             }
 
-            if (hasCar() && nextWaypoint.hasCar() && nextWaypoint.getCar().CurrentSpeed < car.CurrentSpeed && !isTrafficLightWaypoint && !stopSign && !tJunc)
+            if (hasCar() && nextWaypoint.hasCarThere() && nextWaypoint.getCar().CurrentSpeed < car.CurrentSpeed && !isTrafficLightWaypoint && !stopSign && !tJunc)
             {
                 stoppedForCar = true;
                 aiController.aiStop();
             }
-            else if (stoppedForCar)
+            else if (hasCar() && !nextWaypoint.hasCarThere() && stoppedForCar)
             {
                 stoppedForCar = false;
                 aiController.aiStart();
             }
+
+            //handle interactions with user car
+            
         }
         
     }
@@ -330,7 +342,7 @@ public class Waypoint : MonoBehaviour
         Waypoint tempWayPoint = direction;
         for (int x = 0; x < safeDistance; x++)
         {
-            carFound = carFound || tempWayPoint.hasCar();
+            carFound = carFound || tempWayPoint.hasCarThere();
             tempWayPoint = tempWayPoint.previousWaypoint;
         }
         return !carFound;
@@ -343,29 +355,29 @@ public class Waypoint : MonoBehaviour
         bool leftCarInCentre;
         if (noOfDirections == 3)
         {
-            if (nextIsJunc)
+            if (previousWaypoint.nextIsJunc)
             {
-                rightCarInCentre = ((FourWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCar() || ((FourWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncRight.previousWaypoint).aheadWayPoint.hasCar() ||
-                    ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCar() || ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                aheadCarInCentre = ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCar() || ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCar() ||
-                    ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCar() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                leftCarInCentre = ((FourWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCar() || ((FourWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCar() ||
-                    ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCar() || ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                rightCarInCentre = ((FourWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncRight.previousWaypoint).aheadWayPoint.hasCarThere() ||
+                    ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCarThere() || ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                aheadCarInCentre = ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCarThere() ||
+                    ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                leftCarInCentre = ((FourWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCarThere() ||
+                    ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCarThere() || ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
             }
             else
             {
-                rightCarInCentre = ((FourWayWaypoint)juncRight).rightWaypoint.hasCar() || ((FourWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncRight).aheadWayPoint.hasCar() || ((FourWayWaypoint)juncRight).leftWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                aheadCarInCentre = ((FourWayWaypoint)juncAhead).rightWaypoint.hasCar() || ((FourWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncAhead).aheadWayPoint.hasCar() || ((FourWayWaypoint)juncAhead).leftWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                leftCarInCentre = ((FourWayWaypoint)juncLeft).rightWaypoint.hasCar() || ((FourWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCar()
-                    || ((FourWayWaypoint)juncAhead).aheadWayPoint.hasCar() || ((FourWayWaypoint)juncLeft).leftWaypoint.hasCar() 
-                    || ((FourWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCar() || ((FourWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                rightCarInCentre = ((FourWayWaypoint)juncRight).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncRight).aheadWayPoint.hasCarThere() || ((FourWayWaypoint)juncRight).leftWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                aheadCarInCentre = ((FourWayWaypoint)juncAhead).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncAhead).aheadWayPoint.hasCarThere() || ((FourWayWaypoint)juncAhead).leftWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                leftCarInCentre = ((FourWayWaypoint)juncLeft).rightWaypoint.hasCarThere() || ((FourWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((FourWayWaypoint)juncAhead).aheadWayPoint.hasCarThere() || ((FourWayWaypoint)juncLeft).leftWaypoint.hasCarThere() 
+                    || ((FourWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCarThere() || ((FourWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
             }
 
             
@@ -373,33 +385,33 @@ public class Waypoint : MonoBehaviour
             return (rightCarInCentre || aheadCarInCentre || leftCarInCentre);
         }
         else
-        {
+        {   
             if (nextIsJunc)
             {
                 if (missingRight)
                 {
-                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
 
                     return (aheadCarInCentre || leftCarInCentre);
                 }
                 else if (missingLeft)
                 {
-                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    rightCarInCentre = ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                    || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                    rightCarInCentre = ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
 
                     return (aheadCarInCentre || rightCarInCentre);
                 }
                 else
                 {
-                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    rightCarInCentre = ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCar()
-                    || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                    rightCarInCentre = ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
 
                     return (leftCarInCentre || rightCarInCentre);
                 }
@@ -408,28 +420,28 @@ public class Waypoint : MonoBehaviour
             {
                 if (missingRight)
                 {
-                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncAhead).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncLeft).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncAhead).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncLeft).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
 
                     return (aheadCarInCentre || leftCarInCentre);
                 }
                 else if (missingLeft)
                 {
-                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncAhead).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    rightCarInCentre = ((ThreeWayWaypoint)juncRight).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCar()
-                    || ((ThreeWayWaypoint)juncRight).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    aheadCarInCentre = ((ThreeWayWaypoint)juncAhead).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncAhead).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    rightCarInCentre = ((ThreeWayWaypoint)juncRight).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((ThreeWayWaypoint)juncRight).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
 
                     return (aheadCarInCentre || rightCarInCentre);
                 }
                 else
                 {
-                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCar()
-                        || ((ThreeWayWaypoint)juncLeft).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
-                    rightCarInCentre = ((ThreeWayWaypoint)juncRight).rightWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCar()
-                    || ((ThreeWayWaypoint)juncRight).leftWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+                    leftCarInCentre = ((ThreeWayWaypoint)juncLeft).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).rightWaypoint.nextWaypoint.hasCarThere()
+                        || ((ThreeWayWaypoint)juncLeft).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncLeft).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
+                    rightCarInCentre = ((ThreeWayWaypoint)juncRight).rightWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).rightWaypoint.nextWaypoint.hasCarThere()
+                    || ((ThreeWayWaypoint)juncRight).leftWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncRight).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
 
                     return (leftCarInCentre || rightCarInCentre);
                 }
@@ -445,15 +457,15 @@ public class Waypoint : MonoBehaviour
         bool aheadCarInCentre;
         if (juncAhead.noOfDirections == 3)
         {
-            aheadCarInCentre = juncAhead.hasCar() || ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCar()
-                || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCar() ||
-                ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCar() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCar()
-                || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCar();
+            aheadCarInCentre = juncAhead.hasCarThere() || ((FourWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCarThere()
+                || ((FourWayWaypoint)juncAhead.previousWaypoint).aheadWayPoint.hasCarThere() ||
+                ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCarThere() || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.hasCarThere()
+                || ((FourWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.nextWaypoint.nextWaypoint.hasCarThere();
         }
         else
         {
-            aheadCarInCentre = juncAhead.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCar()
-                || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCar() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCar();
+            aheadCarInCentre = juncAhead.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.hasCarThere()
+                || ((ThreeWayWaypoint)juncAhead.previousWaypoint).rightWaypoint.nextWaypoint.hasCarThere() || ((ThreeWayWaypoint)juncAhead.previousWaypoint).leftWaypoint.hasCarThere();
         }
         return aheadCarInCentre;
     }
@@ -469,6 +481,21 @@ public class Waypoint : MonoBehaviour
     public Vector3 getPosition()
     {
         return transform.position;
+    }
+
+    private bool hasCarThere()
+    {
+        Vector3 carVector = userController.transform.position;
+        Vector3 waypointVector = this.transform.position;
+        carVector.y = 0;
+        waypointVector.y = 0;
+
+        Vector3 diff = waypointVector - carVector;
+        diff.y = 0;
+
+        float angle = Vector3.Angle(carVector, waypointVector);
+
+        return (hasCar() || (diff.magnitude < 6 && angle < 30));
     }
 
     public bool hasCar()

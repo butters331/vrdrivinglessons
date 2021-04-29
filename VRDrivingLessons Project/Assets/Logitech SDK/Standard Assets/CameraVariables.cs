@@ -6,6 +6,7 @@ public class CameraVariables : MonoBehaviour
 {
     public Vector3 coordinates;
     public int lessonSelection;
+    public bool carsActive;
 
     private void Start()
     {

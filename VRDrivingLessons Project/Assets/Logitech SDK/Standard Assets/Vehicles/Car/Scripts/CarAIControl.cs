@@ -77,19 +77,21 @@ namespace UnityStandardAssets.Vehicles.Car
             if ((distanceToWaypoint).magnitude <= 3)
             {
                 waypoint.removeCar();
+                bool nextIsJunc = waypoint.nextIsJunc;
                 waypoint = waypoint.nextWaypoint;
                 m_Target = waypoint.transform;
-                if (waypoint.getNoDirections() == 1)
-                {
-                    waypoint.setCar(m_CarController);
-                }
-                else if (waypoint.getNoDirections() == 2)
+                
+                if (!nextIsJunc && waypoint.getNoDirections() == 2)
                 {
                     ((ThreeWayWaypoint)waypoint).setCarThreeWay(m_CarController);
                 }
-                else if (waypoint.getNoDirections() == 3)
+                else if (!nextIsJunc && waypoint.getNoDirections() == 3)
                 {
                     ((FourWayWaypoint)waypoint).setCarFourWay(m_CarController);
+                }
+                else
+                {
+                    waypoint.setCar(m_CarController);
                 }
 
 

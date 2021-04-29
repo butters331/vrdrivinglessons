@@ -23,13 +23,18 @@ public class MenuScript : MonoBehaviour
     public Image lesson2Tick;
     public Button lesson3;
     public Image lesson3Tick;
+    public Button lesson4;
+    public Image lesson4Tick;
+    public Button lesson5;
+    public Image lesson5Tick;
 
     public Button back;
+    public Button reset;
 
     private ColorBlock colours;
 
     private int numberOfOptions = 3;
-    private int numberOfLessons = 3;
+    private int numberOfLessons = 5;
     private bool wheelConnected = false;
     private bool dPadPressed = false;
     private bool sliderSelected = false;
@@ -39,6 +44,7 @@ public class MenuScript : MonoBehaviour
     private bool onTopMenu = true;
     private bool changedState = false;
     private bool onBack = false;
+    private bool onReset = false;
 
     public GameObject cameraVariables;
 
@@ -50,6 +56,8 @@ public class MenuScript : MonoBehaviour
     private int completedAllAroundCheck;
     private int completedStartStop;
     private int completedGearChanging;
+    private int completedTrafficLights;
+    private int completedStopSign;
 
     // Use this for initialization
 
@@ -83,6 +91,8 @@ public class MenuScript : MonoBehaviour
         completedAllAroundCheck = PlayerPrefs.GetInt("AlLAroundCheck", 0);
         completedStartStop = PlayerPrefs.GetInt("StartStop", 0);
         completedGearChanging = PlayerPrefs.GetInt("GearChanging", 0);
+        completedTrafficLights = PlayerPrefs.GetInt("TrafficLights", 0);
+        completedStopSign = PlayerPrefs.GetInt("Stop sign", 0);
 
         if (completedAllAroundCheck == 1)
         {
@@ -110,6 +120,25 @@ public class MenuScript : MonoBehaviour
         {
             lesson3Tick.enabled = false;
         }
+
+        if (completedTrafficLights == 1)
+        {
+            lesson4Tick.enabled = true;
+        }
+        else
+        {
+            lesson4Tick.enabled = false;
+        }
+
+        if (completedStopSign == 1)
+        {
+            lesson5Tick.enabled = true;
+        }
+        else
+        {
+            lesson5Tick.enabled = false;
+        }
+
     }
 
     // Update is called once per frame
@@ -144,6 +173,8 @@ public class MenuScript : MonoBehaviour
                     LessonsMenu.SetActive(false);
                     topMenu.SetActive(true);
                     changedState = false;
+                    selectedOption = 1;
+                    option1.Select();
                 }
                 
                 if (rec.rgdwPOV[0] == 18000 /*if down selected*/)
@@ -164,6 +195,7 @@ public class MenuScript : MonoBehaviour
                         else//otherwise if not selected, go to horrizontal bottom slider
                         {
                             sliderHorizontal.Select();
+                            verticalSliderHead.color = Color.white;
                             sliderSelectedNum = 2;
                         }
                     }
@@ -216,6 +248,7 @@ public class MenuScript : MonoBehaviour
                         else
                         {
                             sliderVertical.Select();
+                            horizontalSliderHead.color = Color.white;
                             sliderSelectedNum = 1;
                         }
                     }
@@ -343,18 +376,25 @@ public class MenuScript : MonoBehaviour
                         if (sliderSelected && sliderSelectedNum == 1)
                         {
                             verticalSliderHead.color = new Color32(5, 154, 5, 255);
-                            horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                            horizontalSliderHead.color = Color.white;
                         }
                         else if (sliderSelected && sliderSelectedNum == 2)
                         {
                             horizontalSliderHead.color = new Color32(5, 154, 5, 255);
-                            verticalSliderHead.color = new Color32(0, 245, 0, 255);
+                            verticalSliderHead.color = Color.white;
 
                         }
-                        else
+                        //change colours so user know if selected
+                        else if (!sliderSelected && sliderSelectedNum == 1)
                         {
                             verticalSliderHead.color = new Color32(0, 245, 0, 255);
+                            horizontalSliderHead.color = Color.white;
+                        }
+                        else if (!sliderSelected && sliderSelectedNum == 2)
+                        {
                             horizontalSliderHead.color = new Color32(0, 245, 0, 255);
+                            verticalSliderHead.color = Color.white;
+
                         }
                     }
 
@@ -372,12 +412,15 @@ public class MenuScript : MonoBehaviour
                     topMenu.SetActive(false);
                     LessonsMenu.SetActive(true);
                     changedState = false;
+                    lesson1.Select();
+                    selectedOptionLessons = 1;
                 }
 
                 if (rec.rgdwPOV[0] == 18000 /*if down selected*/)
                 {
                     //no longer on the back button
                     onBack = false;
+                    onReset = false;
 
                     if (!dPadPressed)
                     {
@@ -402,6 +445,12 @@ public class MenuScript : MonoBehaviour
                         case 3:
                             lesson3.Select();
                             break;
+                        case 4:
+                            lesson4.Select();
+                            break;
+                        case 5:
+                            lesson5.Select();
+                            break;
                         default:
                             lesson1.Select();
                             break;
@@ -413,6 +462,7 @@ public class MenuScript : MonoBehaviour
                 else if (rec.rgdwPOV[0] == 0 /*|| up selected*/)
                 {
                     onBack = false;
+                    onReset = false;
 
                     if (!dPadPressed)
                     {
@@ -435,6 +485,12 @@ public class MenuScript : MonoBehaviour
                         case 3:
                             lesson3.Select();
                             break;
+                        case 4:
+                            lesson4.Select();
+                            break;
+                        case 5:
+                            lesson5.Select();
+                            break;
                         default:
                             lesson1.Select();
                             break;
@@ -444,28 +500,72 @@ public class MenuScript : MonoBehaviour
 
                 else if (rec.rgdwPOV[0] == 27000) // left pressed
                 {
-                    back.Select();
-                    onBack = true;
+                    if (onReset)
+                    {
+                        onReset = false;
+                        switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                lesson1.Select();
+                                break;
+                            case 2:
+                                lesson2.Select();
+                                break;
+                            case 3:
+                                lesson3.Select();
+                                break;
+                            case 4:
+                                lesson4.Select();
+                                break;
+                            case 5:
+                                lesson5.Select();
+                                break;
+                            default:
+                                lesson1.Select();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        back.Select();
+                        onBack = true;
+                    }
                 }
 
                 else if (rec.rgdwPOV[0] == 9000)
                 {
-                    onBack = false;
-                    switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                    if (onBack)
                     {
-                        case 1:
-                            lesson1.Select();
-                            break;
-                        case 2:
-                            lesson2.Select();
-                            break;
-                        case 3:
-                            lesson3.Select();
-                            break;
-                        default:
-                            lesson1.Select();
-                            break;
+                        onBack = false;
+                        switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
+                        {
+                            case 1:
+                                lesson1.Select();
+                                break;
+                            case 2:
+                                lesson2.Select();
+                                break;
+                            case 3:
+                                lesson3.Select();
+                                break;
+                            case 4:
+                                lesson4.Select();
+                                break;
+                            case 5:
+                                lesson5.Select();
+                                break;
+                            default:
+                                lesson1.Select();
+                                break;
+                        }
                     }
+                    else
+                    {
+                        onReset = true;
+                        reset.Select();
+                    }
+                    
+                    
                 }
 
                 else
@@ -487,6 +587,65 @@ public class MenuScript : MonoBehaviour
                         onTopMenu = true;
                         changedState = true;
                     }
+                    else if (onReset)
+                    {
+                        PlayerPrefs.SetInt("AlLAroundCheck", 0);
+                        PlayerPrefs.SetInt("StartStop", 0);
+                        PlayerPrefs.SetInt("GearChanging", 0);
+                        PlayerPrefs.SetInt("TrafficLights", 0);
+                        PlayerPrefs.SetInt("Stop sign", 0);
+
+                        completedAllAroundCheck = PlayerPrefs.GetInt("AlLAroundCheck", 0);
+                        completedStartStop = PlayerPrefs.GetInt("StartStop", 0);
+                        completedGearChanging = PlayerPrefs.GetInt("GearChanging", 0);
+                        completedTrafficLights = PlayerPrefs.GetInt("TrafficLights", 0);
+                        completedStopSign = PlayerPrefs.GetInt("Stop sign", 0);
+
+                        if (completedAllAroundCheck == 1)
+                        {
+                            lesson1Tick.enabled = true;
+                        }
+                        else
+                        {
+                            lesson1Tick.enabled = false;
+                        }
+
+                        if (completedStartStop == 1)
+                        {
+                            lesson2Tick.enabled = true;
+                        }
+                        else
+                        {
+                            lesson2Tick.enabled = false;
+                        }
+
+                        if (completedGearChanging == 1)
+                        {
+                            lesson3Tick.enabled = true;
+                        }
+                        else
+                        {
+                            lesson3Tick.enabled = false;
+                        }
+
+                        if (completedTrafficLights == 1)
+                        {
+                            lesson4Tick.enabled = true;
+                        }
+                        else
+                        {
+                            lesson4Tick.enabled = false;
+                        }
+
+                        if (completedStopSign == 1)
+                        {
+                            lesson5Tick.enabled = true;
+                        }
+                        else
+                        {
+                            lesson5Tick.enabled = false;
+                        }
+                    }
                     else
                     {
                         switch (selectedOptionLessons) //Set the visual indicator for which option you are on.
@@ -501,6 +660,14 @@ public class MenuScript : MonoBehaviour
                                 break;
                             case 3:
                                 cameraVariables.GetComponent<CameraVariables>().lessonSelection = 3;
+                                SceneManager.LoadScene(1);
+                                break;
+                            case 4:
+                                cameraVariables.GetComponent<CameraVariables>().lessonSelection = 4;
+                                SceneManager.LoadScene(1);
+                                break;
+                            case 5:
+                                cameraVariables.GetComponent<CameraVariables>().lessonSelection = 5;
                                 SceneManager.LoadScene(1);
                                 break;
                         }

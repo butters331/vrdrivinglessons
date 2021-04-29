@@ -9,7 +9,7 @@ public class FourWayWaypoint : Waypoint
     public void chooseDirection()
     {
         System.Random random = new System.Random();
-        int chosenDirection = random.Next(0, 3);
+        int chosenDirection = random.Next(0, 2);
         CarAIControl carAi = getCarAI();
 
         if (nextIsJunc)

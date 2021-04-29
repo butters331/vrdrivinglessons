@@ -74,8 +74,6 @@ public class GearChanging : MonoBehaviour
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
             rec = LogitechGSDK.LogiGetStateUnity(0);
 
-            Debug.Log("Step: " + step);
-
             switch (step)
             {
                 case 0: // turn car on

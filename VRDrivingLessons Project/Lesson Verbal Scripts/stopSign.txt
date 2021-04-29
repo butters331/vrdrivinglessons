@@ -1,0 +1,39 @@
+In this lesson we will learn how to manover a stop sign junction. At these
+junctions, you should always come to a complete stop before moving into the
+junction. You must wait at the junction until their is nothing waiting in
+the lane to your right. If all lanes are occupied with waiting cars, then
+the car that arrived first has right of way. Use the same road positionings
+as in the traffic light lesson, and make sure to only cross lanes if its
+safe to do so.
+
+First a quick overview. Start the car and pull away when its safe to do so.
+Then approaching the junction I will tell you which direction to travel.
+You will then check your mirrors, indicate accordingly and put the car in 
+the right position of the lane before coming to a stop at the stop sign.
+When there is nothing in the lane to your right, you will pull away.
+
+Start the car and pull away when it is safe to do so.
+
+Good. Go straight ahead at the junction.
+
+Good. Turn right at the junction.
+
+Good. Turn left at the junction.
+
+Now check your mirrors and indicate.
+
+Great, now move the car to the left of the lane
+
+Great, now move the car to the right of the lane
+
+Come to a stop at the junction.
+
+There is nothing to the right, carry on.
+
+Wait here until the right lane is free.
+
+Gridlock. The car here first will move.
+
+Congratulations, you have completed the lesson.
+
+Press X to return to the main menu.
