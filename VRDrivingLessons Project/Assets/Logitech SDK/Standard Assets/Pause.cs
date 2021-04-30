@@ -197,7 +197,8 @@ public class Pause : MonoBehaviour
                 }
                 else if(selectedOption == 4)
                 {
-                    SceneManager.LoadScene(0);
+                    Destroy(cameraVariables);
+                    SceneManager.LoadScene(0); 
                 }
             }
         }

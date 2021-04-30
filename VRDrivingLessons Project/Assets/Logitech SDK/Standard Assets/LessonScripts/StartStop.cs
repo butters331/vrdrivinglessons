@@ -87,12 +87,14 @@ public class StartStop : MonoBehaviour
                         firstLoad = false;
                         if (!introPlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(intro));
                             introPlayed = true;
                         }
 
                         if (!overviewPlayed && !intro.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(overview));
                             overviewPlayed = true;
                         }
@@ -100,6 +102,7 @@ public class StartStop : MonoBehaviour
 
                     if (!turnOnPlayed && !intro.isPlaying && !overview.isPlaying && !stallHelp.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(turnOn));
                         turnOnPlayed = true;
                     }
@@ -114,6 +117,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!clutchInPlayed && !stallHelp.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(clutchIn));
                         clutchInPlayed = true;
                     }
@@ -128,6 +132,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!intoFirstPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(intoFirst));
                         intoFirstPlayed = true;
                     }
@@ -143,6 +148,7 @@ public class StartStop : MonoBehaviour
 
                     if (!indicateLeftPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(indicateLeft));
                         indicateLeftPlayed = true;
                     }
@@ -158,6 +164,7 @@ public class StartStop : MonoBehaviour
 
                     if (!bitePlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(bite));
                         bitePlayed = true;
                     }
@@ -188,6 +195,7 @@ public class StartStop : MonoBehaviour
 
                     if (!handbrakeOffPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(handbrakeOff));
                         handbrakeOffPlayed = true;
                     }
@@ -203,6 +211,7 @@ public class StartStop : MonoBehaviour
 
                     if (!increaseRevsPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(increaseRevs));
                         increaseRevsPlayed = true;
                     }
@@ -232,6 +241,7 @@ public class StartStop : MonoBehaviour
 
                     if (!startMovingPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(startMoving));
                         startMovingPlayed = true;
                     }
@@ -248,6 +258,7 @@ public class StartStop : MonoBehaviour
                     {
                         if (!optionalCancelIndicationPlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(optionalCancelIndication));
                             optionalCancelIndicationPlayed = true;
                         }
@@ -273,6 +284,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!indicateRightPlayed && !startMoving.isPlaying && !optionalCancelIndication.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(indicateRight));
                         indicateRightPlayed = true;
                     }
@@ -287,6 +299,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!clutchIn2Played)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(clutchIn2));
                         clutchIn2Played = true;
                     }
@@ -302,6 +315,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!startBrakingPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(startBraking));
                         startBrakingPlayed = true;
                     }
@@ -316,6 +330,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!outOfGearPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(outOfGear));
                         outOfGearPlayed = true;
                     }
@@ -330,6 +345,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!releaseClutchPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(releaseClutch));
                         releaseClutchPlayed = true;
                     }
@@ -346,6 +362,7 @@ public class StartStop : MonoBehaviour
 
                     if (!applyHandbrakePlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(applyHandbrake));
                         applyHandbrakePlayed = true;
                     }
@@ -360,6 +377,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!releaseBrakePlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(releaseBrake));
                         releaseBrakePlayed = true;
                     }
@@ -375,6 +393,7 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!cancelIndicationPlayed )
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(cancelIndication));
                         cancelIndicationPlayed = true;
                     }
@@ -390,12 +409,14 @@ public class StartStop : MonoBehaviour
                     //dialogue
                     if (!outroPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(outro));
                         outroPlayed = true;
                     }
 
                     if (!returnToMainMenuPlayed && !outro.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(returnToMainMenu));
                         returnToMainMenuPlayed = true;
                     }
@@ -404,6 +425,8 @@ public class StartStop : MonoBehaviour
                     //if x pressed
                     if (rec.rgbButtons[2] == 128)
                     {
+                        GameObject cameraVariables = GameObject.Find("CameraVariables"); ;
+                        Destroy(cameraVariables);
                         SceneManager.LoadScene(0);
                     }
 
@@ -413,24 +436,6 @@ public class StartStop : MonoBehaviour
 
             if (car.stalled && step != 17)
             {
-                //stop all audio
-                turnOn.Stop();
-                clutchIn.Stop();
-                intoFirst.Stop();
-                indicateLeft.Stop();
-                bite.Stop();
-                handbrakeOff.Stop();
-                increaseRevs.Stop();
-                startMoving.Stop();
-                optionalCancelIndication.Stop();
-                indicateRight.Stop();
-                clutchIn2.Stop();
-                startBraking.Stop();
-                outOfGear.Stop();
-                releaseClutch.Stop();
-                applyHandbrake.Stop();
-                releaseBrake.Stop();
-                cancelIndication.Stop();
 
                 //reset booleans
                 turnOnPlayed = false;
@@ -458,6 +463,7 @@ public class StartStop : MonoBehaviour
                 step = 1;
                 if (!stallHelpPlayed)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(stallHelp));
                     stallHelpPlayed = true;
                 }
@@ -467,6 +473,30 @@ public class StartStop : MonoBehaviour
                 stallHelpPlayed = false;
             }
         }
+    }
+
+    private void stopAllVoices()
+    {
+        intro.Stop();
+        overview.Stop();
+        turnOn.Stop();
+        clutchIn.Stop();
+        intoFirst.Stop();
+        indicateLeft.Stop();
+        bite.Stop();
+        handbrakeOff.Stop();
+        increaseRevs.Stop();
+        startMoving.Stop();
+        optionalCancelIndication.Stop();
+        indicateRight.Stop();
+        clutchIn2.Stop();
+        startBraking.Stop();
+        outOfGear.Stop();
+        releaseClutch.Stop();
+        applyHandbrake.Stop();
+        releaseBrake.Stop();
+        cancelIndication.Stop();
+        stallHelp.Stop();
     }
 
     IEnumerator playVoiceOver(AudioSource source)

@@ -66,6 +66,7 @@ public class AllAroundCheck : MonoBehaviour
             }
             if (!rightShoulderPlayed && !intro.isPlaying)
             {
+                stopAllVoices();
                 StartCoroutine(playVoiceOver(rightShoulderAudio));
                 rightShoulderPlayed = true;
             }
@@ -81,6 +82,7 @@ public class AllAroundCheck : MonoBehaviour
         {
             if (!rightMirrorPlayed && !rightShoulderAudio.isPlaying)
             {
+                stopAllVoices();
                 StartCoroutine(playVoiceOver(rightMirrorAudio));
                 rightMirrorPlayed = true;
             }
@@ -96,6 +98,7 @@ public class AllAroundCheck : MonoBehaviour
         {
             if (!interiorMirrorPlayed && !rightMirrorAudio.isPlaying)
             {
+                stopAllVoices();
                 StartCoroutine(playVoiceOver(interiorMirrorAudio));
                 interiorMirrorPlayed = true;
             }
@@ -111,6 +114,7 @@ public class AllAroundCheck : MonoBehaviour
         {
             if (!leftMirrorPlayed && !interiorMirrorAudio.isPlaying)
             {
+                stopAllVoices();
                 StartCoroutine(playVoiceOver(leftMirrorAudio));
                 leftMirrorPlayed = true;
             }
@@ -126,6 +130,7 @@ public class AllAroundCheck : MonoBehaviour
         {
             if (!leftShoulderPlayed && !leftMirrorAudio.isPlaying)
             {
+                stopAllVoices();
                 StartCoroutine(playVoiceOver(leftShoulderAudio));
                 leftShoulderPlayed = true;
             }
@@ -146,12 +151,14 @@ public class AllAroundCheck : MonoBehaviour
 
                 if (!outroPlayed && !leftShoulderAudio.isPlaying)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(outro));
                     outroPlayed = true;
                 }
 
                 if (!xPlayed && !outro.isPlaying)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(returnToMainMenu));
                     xPlayed = true;
                 }
@@ -159,6 +166,8 @@ public class AllAroundCheck : MonoBehaviour
                 //if x pressed
                 if (rec.rgbButtons[2] == 128)
                 {
+                    GameObject cameraVariables = GameObject.Find("CameraVariables"); ;
+                    Destroy(cameraVariables);
                     SceneManager.LoadScene(0);
                 }
             }
@@ -211,7 +220,7 @@ public class AllAroundCheck : MonoBehaviour
             //perform disappearing animation?
     }
 
-    IEnumerator barLoad(GameObject panel)
+    private IEnumerator barLoad(GameObject panel)
     {
         Vector3 positionDifference = panel.transform.position - mainCam.transform.position;
 
@@ -236,7 +245,19 @@ public class AllAroundCheck : MonoBehaviour
        
     }
 
-    IEnumerator playVoiceOver(AudioSource source)
+    private void stopAllVoices()
+    {
+        intro.Stop();
+        rightShoulderAudio.Stop();
+        rightMirrorAudio.Stop();
+        interiorMirrorAudio.Stop();
+        leftMirrorAudio.Stop();
+        leftShoulderAudio.Stop();
+        outro.Stop();
+        returnToMainMenu.Stop();
+    }
+
+    private IEnumerator playVoiceOver(AudioSource source)
     {
         source.Play();
         yield return new WaitForSeconds(source.clip.length);

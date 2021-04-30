@@ -81,22 +81,26 @@ public class GearChanging : MonoBehaviour
 
                     if (firstLoad)
                     {
-                        firstLoad = false;
+                        
                         if (!introPlayed)
                         {
-                            //StartCoroutine(playVoiceOver(intro));
+                            stopAllVoices();
+                            StartCoroutine(playVoiceOver(intro));
                             introPlayed = true;
                         }
 
                         if (!overviewPlayed && !intro.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(overview));
                             overviewPlayed = true;
+                            firstLoad = false;
                         }
                     }
 
                     if (!startEnginePlayed && !intro.isPlaying && !overview.isPlaying && !stallHelp.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(startEngine));
                         startEnginePlayed = true;
                     }
@@ -111,6 +115,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!intoFirstPlayed && !stallHelp.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(intoFirst));
                         intoFirstPlayed = true;
                     }
@@ -125,6 +130,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!indicateLeftPlayed && !intoFirst.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(indicateLeft));
                         indicateLeftPlayed = true;
                     }
@@ -140,6 +146,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!bringToBitePlayed && !indicateLeft.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(bringToBite));
                         bringToBitePlayed = true;
                     }
@@ -165,6 +172,7 @@ public class GearChanging : MonoBehaviour
                 case 4: //do check then release handbrake
                     if (!releaseHandbrakePlayed && !bringToBite.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(releaseHandbrake));
                         releaseHandbrakePlayed = true;
                     }
@@ -180,6 +188,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!pullAwayPlayed && !releaseHandbrake.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(pullAway));
                         pullAwayPlayed = true;
                     }
@@ -200,6 +209,7 @@ public class GearChanging : MonoBehaviour
                 case 7: // change to second
                     if (!upToSecondPlayed && !pullAway.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(upToSecond));
                         upToSecondPlayed = true;
                     }
@@ -212,6 +222,7 @@ public class GearChanging : MonoBehaviour
                 case 8: //get revs to 3000rpm
                     if (!driveOnPlayed && !upToSecond.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(driveOn));
                         driveOnPlayed = true;
                     }
@@ -225,6 +236,7 @@ public class GearChanging : MonoBehaviour
                 case 9: //change to third
                     if (!upToThirdPlayed && !driveOn.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(upToThird));
                         upToThirdPlayed = true;
                     }
@@ -238,6 +250,7 @@ public class GearChanging : MonoBehaviour
                 case 10: //drive for a bit
                     if (!wellDonePlayed && !upToThird.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(wellDone));
                         wellDonePlayed = true;
                     }
@@ -260,6 +273,7 @@ public class GearChanging : MonoBehaviour
                 case 11: // slow to around 1.5 revs
                     if (!brakePlayed && !wellDone.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(brake));
                         brakePlayed = true;
                     }
@@ -273,6 +287,7 @@ public class GearChanging : MonoBehaviour
                 case 12: // shift down to second
                     if (!downToSecondPlayed && !brake.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(downToSecond));
                         downToSecondPlayed = true;
                     }
@@ -287,6 +302,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!goodJobPlayed && !downToSecond.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(goodJob));
                         goodJobPlayed = true;
                     }
@@ -310,6 +326,7 @@ public class GearChanging : MonoBehaviour
                 case 14: // indicate right
                     if (!indicateRightPlayed && !goodJob.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(indicateRight));
                         indicateRightPlayed = true;
                     }
@@ -323,6 +340,7 @@ public class GearChanging : MonoBehaviour
                 case 15: // clutchdown and brake to a stop
                     if (!stopAtSidePlayed && !indicateRight.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(stopAtSide));
                         stopAtSidePlayed = true;
                     }
@@ -336,6 +354,7 @@ public class GearChanging : MonoBehaviour
                 case 16: //take out of gear
                     if (!outOfGearPlayed && !stopAtSide.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(outOfGear));
                         outOfGearPlayed = true;
                     }
@@ -350,6 +369,7 @@ public class GearChanging : MonoBehaviour
 
                     if (!releaseClutchPlayed && !outOfGear.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(releaseClutch));
                         releaseClutchPlayed = true;
                     }
@@ -363,6 +383,7 @@ public class GearChanging : MonoBehaviour
                 case 18: //apply handbrake
                     if (!applyHandbrakePlayed && !releaseClutch.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(applyHandbrake));
                         applyHandbrakePlayed = true;
                     }
@@ -375,6 +396,7 @@ public class GearChanging : MonoBehaviour
                 case 19: // release brake
                     if (!stopBrakingPlayed && !applyHandbrake.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(stopBraking));
                         stopBrakingPlayed = true;
                     }
@@ -387,6 +409,7 @@ public class GearChanging : MonoBehaviour
                 case 20: // stop indicating
                     if (!cancelIndicationPlayed && !stopBraking.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(cancelIndication));
                         cancelIndicationPlayed = true;
                     }
@@ -400,6 +423,7 @@ public class GearChanging : MonoBehaviour
                     PlayerPrefs.SetInt("GearChanging", 1);
                     if (!outroPlayed && !cancelIndication.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(outro));
                         outroPlayed = true;
                     }
@@ -407,6 +431,8 @@ public class GearChanging : MonoBehaviour
                     //if x pressed
                     if (rec.rgbButtons[2] == 128)
                     {
+                        GameObject cameraVariables = GameObject.Find("CameraVariables"); ;
+                        Destroy(cameraVariables);
                         SceneManager.LoadScene(0);
                     }
 
@@ -417,30 +443,6 @@ public class GearChanging : MonoBehaviour
 
             if (car.stalled && step != 21)
             {
-                intro.Stop();
-                overview.Stop();
-                startEngine.Stop();
-                intoFirst.Stop();
-                indicateLeft.Stop();
-                bringToBite.Stop();
-                releaseHandbrake.Stop();
-                pullAway.Stop();
-                upToSecond.Stop();
-                driveOn.Stop();
-                upToThird.Stop();
-                wellDone.Stop();
-                brake.Stop();
-                downToSecond.Stop();
-                goodJob.Stop();
-                indicateRight.Stop();
-                stopAtSide.Stop();
-                outOfGear.Stop();
-                releaseClutch.Stop();
-                applyHandbrake.Stop();
-                stopBraking.Stop();
-                cancelIndication.Stop();
-                outro.Stop();
-
                 startEnginePlayed = false;
                 intoFirstPlayed = false;
                 bringToBitePlayed = false;
@@ -465,11 +467,40 @@ public class GearChanging : MonoBehaviour
                 step = 1;
                 if (!stallHelpPlayed)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(stallHelp));
                     stallHelpPlayed = true;
                 }
             }
         }
+    }
+
+    private void stopAllVoices()
+    {
+        intro.Stop();
+        overview.Stop();
+        startEngine.Stop();
+        intoFirst.Stop();
+        indicateLeft.Stop();
+        bringToBite.Stop();
+        releaseHandbrake.Stop();
+        pullAway.Stop();
+        upToSecond.Stop();
+        driveOn.Stop();
+        upToThird.Stop();
+        wellDone.Stop();
+        brake.Stop();
+        downToSecond.Stop();
+        goodJob.Stop();
+        indicateRight.Stop();
+        stopAtSide.Stop();
+        outOfGear.Stop();
+        releaseClutch.Stop();
+        applyHandbrake.Stop();
+        stopBraking.Stop();
+        cancelIndication.Stop();
+        outro.Stop();
+        stallHelp.Stop();
     }
 
     IEnumerator playVoiceOver(AudioSource source)

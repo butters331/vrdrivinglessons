@@ -1,3 +1,7 @@
+/*
+    This code is an adaptation or the source code from the Unity Standard Assets Library
+ */
+
 using System;
 using System.Collections;
 using UnityEngine;
@@ -488,7 +492,12 @@ namespace UnityStandardAssets.Vehicles.Car
                     {
                         UnityEngine.XR.InputTracking.Recenter();
                     }
-
+                    steering = Mathf.Clamp(steering, -1, 1);
+                    //Set the steer on the front wheels.
+                    //Assuming that wheels 0 and 1 are the front wheels.
+                    m_SteerAngle = steering * m_MaximumSteerAngle;
+                    m_WheelColliders[0].steerAngle = m_SteerAngle;
+                    m_WheelColliders[1].steerAngle = m_SteerAngle;
                     AccelInput = accel = 0.0f;
                     BrakeInput = footbrake = -1 * Mathf.Clamp(footbrake, -1, 0);
                     ApplyDrive(accel, footbrake);

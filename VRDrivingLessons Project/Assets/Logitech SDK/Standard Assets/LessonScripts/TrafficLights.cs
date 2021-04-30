@@ -86,12 +86,14 @@ public class TrafficLights : MonoBehaviour
                     {
                         if (!introPlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(intro));
                             introPlayed = true;
                         }
 
                         if (!overviewPlayed && !intro.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(overview));
                             overviewPlayed = true;
                             firstLoad = false;
@@ -110,6 +112,7 @@ public class TrafficLights : MonoBehaviour
 
                     if (!startCarPlayed && !overview.isPlaying && !intro.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(startCar));
                         startCarPlayed = true;
                     }
@@ -126,6 +129,7 @@ public class TrafficLights : MonoBehaviour
 
                     if (!directionPlayed && !startCar.isPlaying)
                     {
+                        stopAllVoices();
                         if (directionToTravel == 0)
                         {
                             StartCoroutine(playVoiceOver(directionStraight));
@@ -156,6 +160,7 @@ public class TrafficLights : MonoBehaviour
                     {
                         if (!indicatePlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(indicate));
                             indicatePlayed = true;
                         }
@@ -186,6 +191,7 @@ public class TrafficLights : MonoBehaviour
                     {
                         if (!lanePositioningPlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(moveLeft));
                             lanePositioningPlayed = true;
                         }
@@ -194,6 +200,7 @@ public class TrafficLights : MonoBehaviour
                     {
                         if (!lanePositioningPlayed)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(moveRight));
                             lanePositioningPlayed = true;
                         }
@@ -210,6 +217,7 @@ public class TrafficLights : MonoBehaviour
                 case 4:
                     if (!greenRedPlayed && currentLightStatus == greenLight.enabled)
                     {
+                        stopAllVoices();
                         if (greenLight.enabled)
                         {
                             StartCoroutine(playVoiceOver(green));
@@ -223,6 +231,7 @@ public class TrafficLights : MonoBehaviour
 
                     else if (currentLightStatus != greenLight.enabled && !red.isPlaying && !green.isPlaying && !checkLane.isPlaying)
                     {
+                        stopAllVoices();
                         currentLightStatus = greenLight.enabled;
                         if (greenLight.enabled)
                         {
@@ -237,6 +246,7 @@ public class TrafficLights : MonoBehaviour
 
                     if (directionToTravel == 1 && !checkLanePlayed && greenLight.enabled && !green.isPlaying && !red.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(checkLane));
                         checkLanePlayed = true;
                     }
@@ -274,6 +284,7 @@ public class TrafficLights : MonoBehaviour
 
                     if (passedDestination && !finishPlayed && !green.isPlaying && !red.isPlaying && !checkLane.isPlaying)
                     {
+                        stopAllVoices();
                         PlayerPrefs.SetInt("TrafficLights", 1);
                         StartCoroutine(playVoiceOver(finished));
                         finishPlayed = true;
@@ -281,12 +292,15 @@ public class TrafficLights : MonoBehaviour
 
                     if (finishPlayed && !finished.isPlaying && !xPlayed)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(pressX));
                         xPlayed = true;
                     }
                     //if x pressed
                     if (rec.rgbButtons[2] == 128 && xPlayed)
                     {
+                        GameObject cameraVariables = GameObject.Find("CameraVariables"); ;
+                        Destroy(cameraVariables);
                         SceneManager.LoadScene(0);
                     }
 
@@ -295,21 +309,10 @@ public class TrafficLights : MonoBehaviour
 
             if (car.stalled && !finishPlayed)
             {
-                startCar.Stop();
-                directionStraight.Stop();
-                directionLeft.Stop();
-                directionRight.Stop();
-                indicate.Stop();
-                moveRight.Stop();
-                moveLeft.Stop();
-                green.Stop();
-                red.Stop();
-                checkLane.Stop();
-                finished.Stop();
-                pressX.Stop();
 
                 if (!stallPlayed)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(stall));
                     stallPlayed = true;
                     switch (step)
@@ -336,6 +339,25 @@ public class TrafficLights : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void stopAllVoices()
+    {
+        intro.Stop();
+        overview.Stop();
+        startCar.Stop();
+        directionStraight.Stop();
+        directionLeft.Stop();
+        directionRight.Stop();
+        indicate.Stop();
+        moveRight.Stop();
+        moveLeft.Stop();
+        green.Stop();
+        red.Stop();
+        checkLane.Stop();
+        finished.Stop();
+        pressX.Stop();
+        stall.Stop();
     }
 
     private void setCarsActive()

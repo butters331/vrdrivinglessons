@@ -95,12 +95,14 @@ public class StopSign : MonoBehaviour
                     {
                         if (!introPlayed && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(intro));
                             introPlayed = true;
                         }
 
                         if (!overviewPlayed && !intro.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(overview));
                             overviewPlayed = true;
                             firstLoad = false;
@@ -119,6 +121,7 @@ public class StopSign : MonoBehaviour
 
                     if (!startCarPlayed && !overview.isPlaying && !intro.isPlaying && !stall.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(startCar));
                         startCarPlayed = true;
                     }
@@ -134,6 +137,7 @@ public class StopSign : MonoBehaviour
 
                     if (!directionPlayed && !startCar.isPlaying && !stall.isPlaying )
                     {
+                        stopAllVoices();
                         if (directionToTravel == 0)
                         {
                             StartCoroutine(playVoiceOver(directionStraight));
@@ -164,6 +168,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!indicatePlayed && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(indicate));
                             indicatePlayed = true;
                         }
@@ -194,6 +199,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!lanePositioningPlayed && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(moveLeft));
                             lanePositioningPlayed = true;
                         }
@@ -202,6 +208,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!lanePositioningPlayed && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(moveRight));
                             lanePositioningPlayed = true;
                         }
@@ -216,6 +223,7 @@ public class StopSign : MonoBehaviour
                 case 4: // stop at junc
                     if (!stopAtJuncPlayed && !moveLeft.isPlaying && !moveRight.isPlaying && !stall.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(stopAtJunc));
                         stopAtJuncPlayed = true;
                     }
@@ -239,6 +247,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!clearPlayed && !waitHere.isPlaying && !gridlock.isPlaying && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(clear));
                             clearPlayed = true;
                         }
@@ -247,6 +256,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!gridlockPlayed && !clear.isPlaying && !waitHere.isPlaying && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(gridlock));
                             gridlockPlayed = true;
                         }
@@ -255,6 +265,7 @@ public class StopSign : MonoBehaviour
                     {
                         if (!waitHerePlayed && !gridlock.isPlaying && !clear.isPlaying && !stall.isPlaying)
                         {
+                            stopAllVoices();
                             StartCoroutine(playVoiceOver(waitHere));
                             gridlockPlayed = true;
                         }
@@ -289,6 +300,7 @@ public class StopSign : MonoBehaviour
                 case 6:
                     if (!outroPlayed && !stall.isPlaying)
                     {
+                        stopAllVoices();
                         PlayerPrefs.SetInt("Stop sign", 1);
                         StartCoroutine(playVoiceOver(outro));
                         outroPlayed = true;
@@ -296,6 +308,7 @@ public class StopSign : MonoBehaviour
 
                     if (!xPlayed && !outro.isPlaying && !stall.isPlaying)
                     {
+                        stopAllVoices();
                         StartCoroutine(playVoiceOver(pressX));
                         xPlayed = true;
                     }
@@ -303,6 +316,8 @@ public class StopSign : MonoBehaviour
                     //if x pressed
                     if (rec.rgbButtons[2] == 128 && xPlayed)
                     {
+                        GameObject cameraVariables = GameObject.Find("CameraVariables"); ;
+                        Destroy(cameraVariables);
                         SceneManager.LoadScene(0);
                     }
 
@@ -311,22 +326,10 @@ public class StopSign : MonoBehaviour
 
             if (car.stalled && !outroPlayed)
             {
-                startCar.Stop();
-                directionStraight.Stop();
-                directionLeft.Stop();
-                directionRight.Stop();
-                indicate.Stop();
-                moveRight.Stop();
-                moveLeft.Stop();
-                stopAtJunc.Stop();
-                gridlock.Stop();
-                waitHere.Stop();
-                clear.Stop();
-                outro.Stop();
-                pressX.Stop();
 
                 if (!stallPlayed)
                 {
+                    stopAllVoices();
                     StartCoroutine(playVoiceOver(stall));
                     stallPlayed = true;
                     switch (step)
@@ -359,6 +362,26 @@ public class StopSign : MonoBehaviour
             }
          }
 
+    }
+
+    private void stopAllVoices()
+    {
+        intro.Stop();
+        overview.Stop();
+        startCar.Stop();
+        directionStraight.Stop();
+        directionLeft.Stop();
+        directionRight.Stop();
+        indicate.Stop();
+        moveRight.Stop();
+        moveLeft.Stop();
+        stopAtJunc.Stop();
+        gridlock.Stop();
+        waitHere.Stop();
+        clear.Stop();
+        outro.Stop();
+        pressX.Stop();
+        stall.Stop();
     }
 
     private void setCarsActive()

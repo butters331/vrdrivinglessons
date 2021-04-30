@@ -1,3 +1,7 @@
+/*
+    This code is an adaptation or the source code from the Unity Standard Assets Library
+ */
+
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;

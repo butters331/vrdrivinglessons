@@ -35,7 +35,7 @@ public class Waypoint : MonoBehaviour
     public CarController car;
 
     private GameObject userCar;
-    private CarController userController;
+    public CarController userController;
 
     [Range(0f, 5f)]
     public float width = 1f;
@@ -319,10 +319,16 @@ public class Waypoint : MonoBehaviour
                 aiController.turning = 0;
             }
 
-            if (hasCar() && nextWaypoint.hasCarThere() && nextWaypoint.getCar().CurrentSpeed < car.CurrentSpeed && !isTrafficLightWaypoint && !stopSign && !tJunc)
+            if (hasCar() && nextWaypoint.hasCarThere() && !isTrafficLightWaypoint && !stopSign && !tJunc)
             {
-                stoppedForCar = true;
-                aiController.aiStop();
+                Vector3 distanceToWaypoint = car.transform.position - transform.position;
+                distanceToWaypoint.y = 0;
+
+                if (distanceToWaypoint.magnitude < 8)
+                {
+                    stoppedForCar = true;
+                    aiController.aiStop();
+                }
             }
             else if (hasCar() && !nextWaypoint.hasCarThere() && stoppedForCar)
             {
@@ -494,7 +500,6 @@ public class Waypoint : MonoBehaviour
         diff.y = 0;
 
         float angle = Vector3.Angle(carVector, waypointVector);
-
         return (hasCar() || (diff.magnitude < 6 && angle < 30));
     }
 
